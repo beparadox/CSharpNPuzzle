@@ -11,14 +11,14 @@ namespace Problem
 	abstract public class AbstractProblem<E, A, C>
 	{
 		//! initial state
-		public E initial;
+		public E initialState;
 		//! goal state
-		public E goal;
+		public E goalState;
 
 		public AbstractProblem(E initial, E goal)
 		{
-			this.initial = initial;
-			this.goal = goal;
+			initialState = initial;
+			goalState = goal;
 		}	
 
 		protected AbstractProblem() {}
@@ -48,7 +48,7 @@ namespace Problem
 	{
 		public int dimension;
 		public int size;
-		int[] goalState, initialState;
+		public new int[] goalState, initialState;
 
 		public NPuzzleProblem(int[] goal, int[] initial)
 		{
@@ -126,9 +126,11 @@ namespace Problem
 			} else if (action == -1) {
 				if (emptyIndex % dimension != 0) return true;
 				else return false;
+			//! down
 			} else if (action == -2) {
 				if (emptyIndex > size - dimension - 1) return true;
 				else return false;
+                        //! up
 			} else {
 				if (emptyIndex < size) return false;
 				else return true;
@@ -162,13 +164,13 @@ namespace Problem
 			if (acceptableAction(state, emptyIndex, action))
 			{
 				if (action == 1) 
-					NPuzzleUtils.swap(newState, emptyIndex, emptyIndex + 1);
+					NPuzzleUtils.Swap(newState, emptyIndex, emptyIndex + 1);
 				else if (action == -1) 
-					NPuzzleUtils.swap(newState, emptyIndex, emptyIndex - 1);
+					NPuzzleUtils.Swap(newState, emptyIndex, emptyIndex - 1);
 				else if (action == -2) 
-					NPuzzleUtils.swap(newState, emptyIndex, emptyIndex + dimension);
+					NPuzzleUtils.Swap(newState, emptyIndex, emptyIndex + dimension);
 				else 
-					NPuzzleUtils.swap(newState, emptyIndex, emptyIndex - dimension);
+					NPuzzleUtils.Swap(newState, emptyIndex, emptyIndex - dimension);
 			}
 
 			return newState;

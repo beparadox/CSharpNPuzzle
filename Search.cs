@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using SearchTreeNode;
 using Problem;
@@ -23,11 +24,15 @@ namespace Search
 
 	public class BestFirstGraphSearch<E, A, C>
 	{
-		private List<E> frontier;
+		private SortedList frontier;
+		private AbstractProblem<E, A, C> problem;
+		private Heuristics.HeuristicFunction<E,A,C> heurfun;
 
-		public BestFirstGraphSearch(AbstractProblem<E, A, C> problem) 
+		public BestFirstGraphSearch(AbstractProblem<E, A, C> problem, Heuristics.HeuristicFunction<E,A,C> hf) 
 		{
-			this.frontier = new List<E>();
+			frontier = new SortedList();
+			this.problem = problem;
+			this.heurfun = hf;
 
 		}
 
@@ -35,6 +40,15 @@ namespace Search
 
 		public Node<E, A, C> search()
 		{
+
+			//! first node in the frontier is the initialState
+			Node<E, A, C> node = new Node<E, A, C>(this.problem.initialState);
+			//! if it happens to be the goal state, return it, we're done
+			if (this.problem.goalTest(node.state)) return node;
+			frontier.Add(this.heurfun(node), node);
+
+			return node;
+
 
 		}
 
@@ -47,10 +61,7 @@ namespace Search
 		{
 
 		}
-
 	}
-
-
 
 }
 

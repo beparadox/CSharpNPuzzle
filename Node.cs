@@ -10,11 +10,11 @@ namespace SearchTreeNode
 	 */
 	public class Node<E, A, C>
 	{
-		E state;
-		Node<E,A,C> parent;
-		A action;
-		C pathCost;
-		int depth;
+		public E state;
+		public Node<E,A,C> parent;
+		public A action;
+		public C pathCost;
+		public int depth;
 
 		public Node(E state, Node<E, A, C> parent=null, A action=default(A), C path_cost=default(C)) 
 		{

@@ -4,6 +4,26 @@ using System.Collections;
 class NPuzzleUtils
 {
 	/*!
+	 *  static Random _random = new Random();
+	 *
+	 *  Found on https://www.dotnetperls.com/fisher-yates-shuffle
+	 *  Used for the Shuffle method
+	 */
+	static Random _random = new Random();
+	/*!
+	 * 
+	 *
+	 */
+	public static int[] generateInitState(int size)
+	{
+		int[] state = new int[size];
+		for (int i = 0; i < size; i++) state[i] = i + 1;
+
+		return state;
+
+	}
+
+	/*!
 	 * An acceptable state for the NPuzzle is an array of ints
 	 * containing the first state.Length positive integers 
 	 * and has an even number of inversions,
@@ -16,6 +36,12 @@ class NPuzzleUtils
 		else return false;
 	}
 
+	/*!
+	 * Assert that a given array contains the correct elements
+	 * for to represent an N-Puzzle state. For a state of size
+	 * numElements, that should be all positive integers between
+	 * 1 to numElements
+	 */
 	public static bool correctElements(int[] state)
 	{
 		int[] copy = new int[state.Length];
@@ -32,7 +58,10 @@ class NPuzzleUtils
 	 * As the input array will never be much larger than
 	 * 36 elements (such n-puzzles are intractable at the
 	 * moment), using O(n*log(n)) algorithms (such as the one
-	 * piggybacking on merge sort) isn't worth it
+	 * piggybacking on merge sort) isn't worth the time.
+	 *
+	 * No need to count inversions with the largest element
+	 * in the array, which should equal state.Length. 
 	 */
 	public static int countInversions(int[] state)
 	{
@@ -51,9 +80,25 @@ class NPuzzleUtils
 		return inversions;
 	}
 
-	public static void swap(int[] state, int index1, int index2)
+	/*!
+	 * Shuffle an array. Found on https://dotnetperls.com/fisher-yates-shuffle
+	 */
+	static void Shuffle<T>(T[] state)
 	{
-		int tmp = state[index1];
+
+		int l = state.Length;
+		for (int i = 0; i < l; i++) {
+			//! NextDouble returns a double from
+			//! 0 to 1
+			int r = i + (int)(_random.NextDouble() * (l - i));
+			NPuzzleUtils.Swap(state, i, r);
+		}
+
+	}
+
+	public static void Swap<T>(T[] state, int index1, int index2)
+	{
+		T tmp = state[index1];
 		state[index1] = state[index2];
 		state[index2] = tmp;
 	}

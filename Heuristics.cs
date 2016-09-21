@@ -3,6 +3,8 @@ using Problem;
 
 namespace Heuristics
 {
+	public delegate C HeuristicFunction<S,A,C>(SearchTreeNode.Node<S, A, C> node);
+
 	public class NPuzzleHeuristics
 	{
 		int size;
