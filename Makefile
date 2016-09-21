@@ -13,7 +13,7 @@ test: tests/NPuzzleTests.exe
 	@nunit-console tests/NPuzzleTests.exe
 
 tests/NPuzzleTests.exe:
-	@mcs tests/NPuzzleTests.cs tests/NPuzzleUtils_Test.cs Problem.cs Node.cs NPuzzleUtils.cs Heuristics.cs Search.cs 
+	@mcs tests/NPuzzleTests.cs tests/NPuzzleUtils_Test.cs Problem.cs Node.cs NPuzzleUtils.cs Heuristics.cs Search.cs -pkg:nunit
 
 run: NPuzzle.exe
 	@mono NPuzzle.exe

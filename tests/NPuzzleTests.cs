@@ -9,6 +9,7 @@ namespace NPuzzleTests
 	{
 		static void Main(string[] args)
 		{
+			Assert.AreEqual(0, 1);
 			
 
 		}
