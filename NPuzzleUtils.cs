@@ -141,4 +141,15 @@ class NPuzzleUtils
 		}
 
 	}
+
+	public class ResultAcceptableActionException: Exception
+	{
+		public ResultAcceptableActionException(string message)
+		{
+			System.Console.WriteLine("You gave an unacceptable action for the current state.");
+			System.Console.WriteLine(message);
+
+		}
+
+	}
 }

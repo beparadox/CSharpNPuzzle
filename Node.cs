@@ -31,7 +31,7 @@ namespace SearchTreeNode
 		public List<Node<E, A, C> > Expand(Problem.AbstractProblem<E,A,C> problem)
 		{
 			List<Node<E, A, C> > nodes = new List<Node<E, A, C> >(); 
-			problem.actions(this.state).ForEach(delegate(A action) 
+			problem.Actions(this.state).ForEach(delegate(A action) 
 					{
 					        nodes.Add(this.ChildNode(problem, action));
 
@@ -42,8 +42,8 @@ namespace SearchTreeNode
 
 		public Node<E,A,C> ChildNode(Problem.AbstractProblem<E,A,C> problem, A action) 
 		{
-		        E nextState = problem.result(this.state, action);	
-			Node<E,A,C> cnode = new Node<E,A,C>(nextState, this, action,problem.pathCost(this.pathCost, this.state, action, nextState)); 
+		        E nextState = problem.Result(this.state, action);	
+			Node<E,A,C> cnode = new Node<E,A,C>(nextState, this, action,problem.PathCost(this.pathCost, this.state, action, nextState)); 
 			return cnode;
 
 		}

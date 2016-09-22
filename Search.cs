@@ -44,7 +44,7 @@ namespace Search
 			//! first node in the frontier is the initialState
 			Node<E, A, C> node = new Node<E, A, C>(this.problem.initialState);
 			//! if it happens to be the goal state, return it, we're done
-			if (this.problem.goalTest(node.state)) return node;
+			if (this.problem.GoalTest(node.state)) return node;
 			frontier.Add(this.heurfun(node), node);
 
 			return node;

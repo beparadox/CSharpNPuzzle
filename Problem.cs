@@ -26,21 +26,21 @@ namespace Problem
 		/*! return a list of possible actions in the
 		 * given state 
 		 * */
-		abstract public List<A> actions(E state);
+		abstract public List<A> Actions(E state);
 
 		/*! return the state resulting from applying action
 		 * to state
 		 * */
-		abstract public E result(E state, A action);
+		abstract public E Result(E state, A action);
 
 		//! goal test
-		abstract public bool goalTest(E state); 
+		abstract public bool GoalTest(E state); 
 
 		/*! get the pathCost given cost, which represents
 		 * the cost to get to state1, and the cost of
 		 * moving to state2 given action
 		 */
-		abstract public C pathCost(C cost, E state1, A action, E state2); 
+		abstract public C PathCost(C cost, E state1, A action, E state2); 
 	}
 
 	// close constructed type
@@ -140,9 +140,9 @@ namespace Problem
 		 *
 		 * 
 		 */
-		public override List<int> actions(int[] state) 
+		public override List<int> Actions(int[] state) 
 		{
-			int emptyIndex = getEmptyIndex(state);
+			int emptyIndex = GetEmptyIndex(state);
 			List<int> actions = new List<int>();
 
 
@@ -165,11 +165,14 @@ namespace Problem
 			return actions;
 		}
 
-		private bool acceptableAction(int[] state, int emptyIndex, int action) 
+		/*!
+		 * Determine whether or not an action is acceptable for the given state
+		 */
+		public bool AcceptableAction(int[] state, int emptyIndex, int action) 
 		{
 			if (action != 1 && action != -1 && action != 2 && action != -2) return false;
 
-			if (getEmptyIndex(state) == emptyIndex) {
+			if (GetEmptyIndex(state) != emptyIndex) {
 				NPuzzleUtils.InvalidEmptyIndexException ex = new NPuzzleUtils.InvalidEmptyIndexException(emptyIndex.ToString());
 				throw ex;
 			}	
@@ -185,11 +188,11 @@ namespace Problem
 				else return false;
 			//! down
 			} else if (action == -2) {
-				if (emptyIndex > size - dimension - 1) return true;
+				if (emptyIndex < size - dimension) return true;
 				else return false;
                         //! up
 			} else {
-				if (emptyIndex < size) return false;
+				if (emptyIndex < dimension) return false;
 				else return true;
 			}
 
@@ -199,7 +202,7 @@ namespace Problem
 		 * get the index of the 'empty' space in the puzzle
 		 * , which is equal to 'size'
 		 */
-		private int getEmptyIndex(int[] state)
+		public int GetEmptyIndex(int[] state)
 		{
 			for (int i = 0; i < state.Length; i++) {
 				if (state[i] == size) return i;
@@ -211,14 +214,14 @@ namespace Problem
 			return 0;
 		}
 
-		public override int[] result(int[] state, int action)
+		public override int[] Result(int[] state, int action)
 		{
 			int[] newState = new int[state.Length];
 			int emptyIndex;
 			state.CopyTo(newState, 0);
 
-		        emptyIndex = getEmptyIndex(state);
-			if (acceptableAction(state, emptyIndex, action))
+		        emptyIndex = GetEmptyIndex(state);
+			if (AcceptableAction(state, emptyIndex, action))
 			{
 				if (action == 1) 
 					NPuzzleUtils.Swap(newState, emptyIndex, emptyIndex + 1);
@@ -228,6 +231,11 @@ namespace Problem
 					NPuzzleUtils.Swap(newState, emptyIndex, emptyIndex + dimension);
 				else 
 					NPuzzleUtils.Swap(newState, emptyIndex, emptyIndex - dimension);
+			} else {
+				String msg = String.Format("You entered an invalid action: {0} for the state {1}", action, state.ToString());
+				NPuzzleUtils.ResultAcceptableActionException ex = new NPuzzleUtils.ResultAcceptableActionException(msg);
+				throw ex;
+
 			}
 
 			return newState;
@@ -235,7 +243,7 @@ namespace Problem
 
          	}
 
-		public override bool goalTest(int[] state) 
+		public override bool GoalTest(int[] state) 
 		{
 			if (this.goalState.Length != state.Length)
 				//TODO: throw error;
@@ -246,7 +254,7 @@ namespace Problem
 			return true;
 		}
 
-		public override int pathCost(int cost, int[] state1, int action, int[] state2)
+		public override int PathCost(int cost, int[] state1, int action, int[] state2)
 		{
 			return cost + 1;
 
