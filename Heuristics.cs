@@ -5,24 +5,17 @@ namespace Heuristics
 {
 	public delegate C HeuristicFunction<S,A,C>(SearchTreeNode.Node<S, A, C> node);
 
-	public class NPuzzleHeuristics
-	{
-		int size;
-		int dim;
-
-		public NPuzzleHeuristics(NPuzzleProblem npuzzle, string heuristic="manhattanDistance")
-		{
-			size = npuzzle.size;
-			dim = npuzzle.dimension;
-		}
-
+	public class NPuzzleHeuristics {
 		/*!
 		 * Calculate the total city-block distance for the
 		 * state
 		 */
-		public int manhattanDistance(int[] state) 
+		public static int ManhattanDistance(SearchTreeNode.Node<int[], int, int> node) 
+                // public static int ManhattanDistance(SearchTreeNode.Node<S,A,C>
 		{
 			int md = 0;
+			int[] state = node.state;
+			int dim = (int) Math.Sqrt(state.Length);
 
 			for (int i = 0; i < state.Length; i++) {
 				if (state[i] != state.Length) {
@@ -40,6 +33,5 @@ namespace Heuristics
 
 			return md;
 		}
-
 	}
 }

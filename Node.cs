@@ -28,19 +28,19 @@ namespace SearchTreeNode
 		}
 
 		/*! nodes reachable from this node */
-		public List<Node<E, A, C> > expand(Problem.AbstractProblem<E,A,C> problem)
+		public List<Node<E, A, C> > Expand(Problem.AbstractProblem<E,A,C> problem)
 		{
 			List<Node<E, A, C> > nodes = new List<Node<E, A, C> >(); 
 			problem.actions(this.state).ForEach(delegate(A action) 
 					{
-					        nodes.Add(this.childNode(problem, action));
+					        nodes.Add(this.ChildNode(problem, action));
 
 					});
 			return nodes;
 
 		}
 
-		public Node<E,A,C> childNode(Problem.AbstractProblem<E,A,C> problem, A action) 
+		public Node<E,A,C> ChildNode(Problem.AbstractProblem<E,A,C> problem, A action) 
 		{
 		        E nextState = problem.result(this.state, action);	
 			Node<E,A,C> cnode = new Node<E,A,C>(nextState, this, action,problem.pathCost(this.pathCost, this.state, action, nextState)); 
@@ -51,9 +51,9 @@ namespace SearchTreeNode
 		/*!
 		 * return a list of actions that led from the root node to this current node
 		 */
-		public List<A> solution() {
+		public List<A> Solution() {
 			List<A> actions = new List<A>();
-			List<Node<E,A,C> > path = this.path();
+			List<Node<E,A,C> > path = this.Path();
 
 			foreach(Node<E,A,C> node in path) {
 				actions.Add(node.action);
@@ -68,7 +68,7 @@ namespace SearchTreeNode
 		/*!
 		 * Return a path from this node back to the parent
 		 */
-		public List<Node<E,A,C> > path()
+		public List<Node<E,A,C> > Path()
 		{
 			Node<E,A,C> node = this.parent;
 			List<Node<E,A,C> > path = new List<Node<E,A,C> >();

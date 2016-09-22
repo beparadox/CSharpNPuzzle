@@ -8,12 +8,12 @@ NPuzzle.exe:
 clean:
 	@rm -f *.exe tests/*.exe
 
-test: tests/NPuzzleTests.exe
-	#@mono tests/NPuzzleTests.exe
-	@nunit-console tests/NPuzzleTests.exe
+test: tests/NPuzzle_Tests.exe
+	#@mono tests/NPuzzle_Tests.exe
+	@nunit-console tests/NPuzzle_Tests.exe
 
-tests/NPuzzleTests.exe:
-	@mcs tests/NPuzzleTests.cs tests/NPuzzleUtils_Test.cs Problem.cs Node.cs NPuzzleUtils.cs Heuristics.cs Search.cs -pkg:nunit
+tests/NPuzzle_Tests.exe:
+	@mcs tests/NPuzzle_Tests.cs tests/NPuzzleUtils_Tests.cs tests/Search_Tests.cs tests/Node_Tests.cs tests/Problem_Tests.cs Problem.cs Node.cs NPuzzleUtils.cs Heuristics.cs Search.cs -pkg:nunit
 
 run: NPuzzle.exe
 	@mono NPuzzle.exe

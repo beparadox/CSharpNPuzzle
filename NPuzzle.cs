@@ -20,7 +20,7 @@ namespace Puzzle
 			try 
 			{
 				NPuzzleProblem problem = new NPuzzleProblem(goalState, initState);
-				Console.WriteLine(NPuzzleUtils.acceptableState(initState));
+				Console.WriteLine(NPuzzleUtils.AcceptableState(initState));
 				// Application.Run(new NPuzzle());
 			} catch (System.IndexOutOfRangeException ex)
 			{

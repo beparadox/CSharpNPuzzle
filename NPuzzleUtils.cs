@@ -11,16 +11,23 @@ class NPuzzleUtils
 	 */
 	static Random _random = new Random();
 	/*!
-	 * 
+	 * Generate a random acceptable initial state
 	 *
 	 */
-	public static int[] generateInitState(int size)
+	public static int[] GenerateInitState(int size)
 	{
 		int[] state = new int[size];
 		for (int i = 0; i < size; i++) state[i] = i + 1;
 
-		return state;
+		NPuzzleUtils.Shuffle(state);
 
+		while(!NPuzzleUtils.AcceptableState(state)) 
+		{
+		        NPuzzleUtils.Shuffle(state);
+		}
+
+
+		return state;
 	}
 
 	/*!
@@ -29,10 +36,10 @@ class NPuzzleUtils
 	 * and has an even number of inversions,
 	 * not counting the largest element
 	 */
-	public static bool acceptableState(int[] state)
+	public static bool AcceptableState(int[] state)
 	{
-		int inversions = countInversions(state);
-		if (correctElements(state) && inversions % 2 == 0) return true;
+		int inversions = CountInversions(state);
+		if (CorrectElements(state) && inversions % 2 == 0) return true;
 		else return false;
 	}
 
@@ -42,7 +49,7 @@ class NPuzzleUtils
 	 * numElements, that should be all positive integers between
 	 * 1 to numElements
 	 */
-	public static bool correctElements(int[] state)
+	public static bool CorrectElements(int[] state)
 	{
 		int[] copy = new int[state.Length];
 		state.CopyTo(copy, 0);
@@ -63,7 +70,7 @@ class NPuzzleUtils
 	 * No need to count inversions with the largest element
 	 * in the array, which should equal state.Length. 
 	 */
-	public static int countInversions(int[] state)
+	public static int CountInversions(int[] state)
 	{
 		int inversions = 0;
 
@@ -83,7 +90,7 @@ class NPuzzleUtils
 	/*!
 	 * Shuffle an array. Found on https://dotnetperls.com/fisher-yates-shuffle
 	 */
-	static void Shuffle<T>(T[] state)
+	public static void Shuffle<T>(T[] state)
 	{
 
 		int l = state.Length;
@@ -122,5 +129,16 @@ class NPuzzleUtils
 			System.Console.WriteLine(message);
 
 		}
+	}
+
+	public class InvalidNPuzzleStatesException: Exception
+	{
+		public InvalidNPuzzleStatesException(string message)
+		{
+			System.Console.WriteLine("The goal state or the initial state for your NPuzzle problem is invalid.");
+			System.Console.WriteLine(message);
+
+		}
+
 	}
 }

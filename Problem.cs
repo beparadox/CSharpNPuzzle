@@ -52,19 +52,76 @@ namespace Problem
 
 		public NPuzzleProblem(int[] goal, int[] initial)
 		{
-			double sqrt = Math.Sqrt(goal.Length);
-			if (goal.Length != initial.Length || 
-					sqrt != Math.Floor(sqrt)) 
-			{
-				// TODO: throw error
+			//! both goal and initial should be the same length
+			//! goal should be a valid goal state (positive integers 1 through size in order
+			//! initial should be an acceptableState (even number of inversions,
+			//!     not including inversions with the largest
+			//!     element in the state, which = size
+			//! 
+			string error = "Empty"; 
+			bool errorFlag = false;
+
+			if (!EqualStateLengths(goal, initial)) {
+				error = "Goal state length and initial state length differ";
+				errorFlag = true;
+			} else 
+                        if (!ValidStateLength(goal)) {
+				error = "The lengt of a state should be equal to the square of an integer.";
+				errorFlag = true;
+			} else
+			if (!ValidGoalState(goal)) {
+				error = "Invalid goal state. It should be the positive integers from 1 to n, where n is the size of the puzzle";
+				errorFlag = true;
+			} else if (!ValidInitialState(initial)) {
+                           	error = "Invalid initial state. It should contain all positive integers from 1 to n, where n is the size of the puzzle, and contain an even number of inversions when not comparing elements to the largest element of size n";
+				errorFlag = true;
+
 			}
+
+		        if (errorFlag)
+			{
+
+	         		NPuzzleUtils.InvalidNPuzzleStatesException ex =
+				new NPuzzleUtils.InvalidNPuzzleStatesException(error);
+				throw ex;
+			}
+
+                      	double sqrt = Math.Sqrt(goal.Length);
+			goalState = goal;
+			initialState = initial;
 			size = goal.Length;
 			dimension = (int) sqrt;
 
-			goalState = goal;
-			initialState = initial;
 		}
 
+
+		private bool EqualStateLengths(int[] goal, int[] initial)
+		{
+			if (goal.Length != initial.Length) return false;
+			else return true;
+		}
+
+                private bool ValidStateLength(int[] goal)
+		{
+			double sqrt = Math.Sqrt(goal.Length);
+			if (sqrt != (double) Math.Floor(sqrt)) return false;
+			else return true;
+		}
+
+		private bool ValidGoalState(int[] goal) 
+		{
+			int l = goal.Length;
+			for (int i = 0; i < l; i++) {
+				if (goal[i] != i + 1) return false;
+			}
+
+			return true;
+		}
+
+		private bool ValidInitialState(int[] initial)
+		{
+			return NPuzzleUtils.AcceptableState(initial);
+		}
 
 		/*!
 		 * Get all the actions possible in a givens state.
