@@ -10,6 +10,7 @@ class NPuzzleUtils
 	 *  Used for the Shuffle method
 	 */
 	static Random _random = new Random();
+
 	/*!
 	 * Generate a random acceptable initial state
 	 *
@@ -31,15 +32,54 @@ class NPuzzleUtils
 	}
 
 	/*!
-	 * An acceptable state for the NPuzzle is an array of ints
-	 * containing the first state.Length positive integers 
-	 * and has an even number of inversions,
-	 * not counting the largest element
+	 * Create a random instance of a problem
 	 */
+	public static Problem.NPuzzleProblem CreateProblem(int size)
+	{
+		if (!AcceptableLength(size))
+		{
+			string msg = String.Format("Length given: {0}", size);
+			UnacceptableLengthException ex = new UnacceptableLengthException(msg);
+			throw ex;
+		}
+
+		int[] goalState = new int[size], initial;
+		for (int i = 0; i < size; i++) 
+			goalState[i] = i + 1;
+
+		initial = GenerateInitState(size);
+		Problem.NPuzzleProblem problem = new Problem.NPuzzleProblem(goalState, initial);
+		return problem;
+	}
+
+	/*!
+	 * An acceptable state for the NPuzzle is an array of ints
+	 * containing whose size is equal to the square of an
+	 * integer, 
+	 * contains the first state.Length positive integers 
+	 * and has an even number of inversions,
+	 * not counting inversions with the largest element
+	 */ 
 	public static bool AcceptableState(int[] state)
 	{
 		int inversions = CountInversions(state);
-		if (CorrectElements(state) && inversions % 2 == 0) return true;
+		if (AcceptableLength(state.Length) && 
+				CorrectElements(state) && 
+				inversions % 2 == 0) 
+			return true;
+		else 
+			return false;
+	}
+
+	/*!
+	 * A state should have the length equal to the square
+	 * of a number
+	 *
+	 */
+	public static bool AcceptableLength(int size)
+	{
+		double sqrt = Math.Sqrt(size);
+		if (sqrt == (double) Math.Floor(sqrt)) return true;
 		else return false;
 	}
 
@@ -151,5 +191,17 @@ class NPuzzleUtils
 
 		}
 
+	}
+
+	public class UnacceptableLengthException : Exception
+	{
+		public UnacceptableLengthException(string message)
+		{
+	                System.Console.WriteLine("Length of a string must be the square of an integer");
+			System.Console.WriteLine(message);
+
+
+
+		}
 	}
 }

@@ -143,6 +143,11 @@ namespace Problem
 		public override List<int> Actions(int[] state) 
 		{
 			int emptyIndex = GetEmptyIndex(state);
+                        if (emptyIndex == -1) 
+			{
+				NPuzzleUtils.MissingEmptyElementException ex = new NPuzzleUtils.MissingEmptyElementException(state.Length.ToString());
+				throw ex; 
+			}
 			List<int> actions = new List<int>();
 
 
@@ -208,10 +213,8 @@ namespace Problem
 				if (state[i] == size) return i;
 			}
 
-			NPuzzleUtils.MissingEmptyElementException ex = new NPuzzleUtils.MissingEmptyElementException(state.Length.ToString());
-			throw ex; 
-
-			return 0;
+			
+			return -1;
 		}
 
 		public override int[] Result(int[] state, int action)
@@ -221,6 +224,11 @@ namespace Problem
 			state.CopyTo(newState, 0);
 
 		        emptyIndex = GetEmptyIndex(state);
+			if (emptyIndex == -1) 
+			{
+				NPuzzleUtils.MissingEmptyElementException ex = new NPuzzleUtils.MissingEmptyElementException(state.Length.ToString());
+				throw ex; 
+			}
 			if (AcceptableAction(state, emptyIndex, action))
 			{
 				if (action == 1) 
@@ -245,8 +253,10 @@ namespace Problem
 
 		public override bool GoalTest(int[] state) 
 		{
-			if (this.goalState.Length != state.Length)
-				//TODO: throw error;
+			if (this.goalState.Length != state.Length) 
+			{
+				return false;
+			}
 			for(int i = 0; i < state.Length; i++)
 			{
 				if (goalState[i] != state[i]) return false;

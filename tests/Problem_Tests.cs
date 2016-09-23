@@ -120,5 +120,16 @@ namespace NPuzzleTests
 			Assert.Throws<NPuzzleUtils.ResultAcceptableActionException>(() => problem.Result(state, 0));
 
 		}
+
+		[Test]
+                public void TestNPuzzleProblemGoalTest()
+		{
+			int[] state = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+			int[] state2 = {1, 2, 3, 4, 5, 6, 7, 9, 8};
+			Problem.NPuzzleProblem problem = CreateProblem(state);
+			Assert.False(problem.GoalTest(state2));
+			Assert.True(problem.GoalTest(state));
+
+		}
 	}
 }
