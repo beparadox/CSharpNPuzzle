@@ -26,8 +26,8 @@ namespace Heuristics
 					//! index (i) and state[i] - 1
 					//! To do this,  
 
-					md += Math.Abs((i - state[i] - 1) / dim);
-					md += Math.Abs((i - state[i] - 1) % dim);
+					md += Math.Abs((i - state[i] + 1) / dim);
+					md += Math.Abs((i - state[i] + 1) % dim);
 				}
 			}
 

@@ -30,41 +30,32 @@ namespace NPuzzleTests
 		[Test]
                 public void TestFrontierAdd()
 		{
-			 SortedList<int, List<SearchTreeNode.NPuzzleNode> > frontier = new SortedList<int, List<SearchTreeNode.NPuzzleNode> >();
+			 SortedList<int, SearchTreeNode.Node<int[],int,int> > frontier = new SortedList<int, SearchTreeNode.Node<int[],int,int> >();
 			//SortedList<int, List<SearchTreeNode.Node<int[],int,int> > frontier = new SortedList<int, List<SearchTreeNode.Node<int[],int,int> >();
 
 
 			Heuristics.HeuristicFunction<int[],int,int> handler = Heuristics.NPuzzleHeuristics.ManhattanDistance;
 
-			List<SearchTreeNode.NPuzzleNode> nodes = TestNode.CreateNodesForTesting();
+			List<SearchTreeNode.Node<int[],int,int> > nodes = TestNode.CreateNodesForTesting();
 			foreach(var node in nodes)
 			{
 				int md = handler(node);
 				//! if it contains the key,
 				//! there should already exist a
 				//! list at that index
-				if (frontier.ContainsKey(md))
+				if (frontier.Contains(md))
 				{
 					//! get the list at key md
-					frontier[md].Add(node);
 
 				} else {
 					//! create a new list
 					//! add the node to it
 					//! set it in the sorted list at key md
-					List<SearchTreeNode.NPuzzleNode> list = new List<SearchTreeNode.NPuzzleNode>();
+					List<SearchTreeNode.Node<int[],int,int> > list = new List<SearchTreeNode.Node<int[],int,int> >();
 					list.Add(node);
 					frontier.Add(md, list);
 				}
 			}
-			Assert.True(frontier.ContainsKey(0));
-			Assert.True(frontier.ContainsKey(1));
-                        Assert.True(frontier.ContainsKey(2));
-			Assert.True(frontier.ContainsKey(3));
-
-			Assert.True(frontier.ContainsKey(4));
-
-			
        
 			System.Diagnostics.Debug.WriteLine("State: ");
 		}

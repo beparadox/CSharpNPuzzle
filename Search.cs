@@ -30,7 +30,7 @@ namespace Search
 
 		public BestFirstGraphSearch(AbstractProblem<E, A, C> problem, Heuristics.HeuristicFunction<E,A,C> hf) 
 		{
-			frontier = new SortedList();
+			this.frontier = new SortedList();
 			this.problem = problem;
 			this.heurfun = hf;
 
@@ -45,7 +45,7 @@ namespace Search
 			Node<E, A, C> node = new Node<E, A, C>(this.problem.initialState);
 			//! if it happens to be the goal state, return it, we're done
 			if (this.problem.GoalTest(node.state)) return node;
-			frontier.Add(this.heurfun(node), node);
+			this.frontier.Add(this.heurfun(node), node);
 
 			return node;
 

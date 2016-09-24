@@ -1,7 +1,8 @@
-using System;
-using System.Collections.Generic;
 namespace Problem
 {
+        using System;
+        using System.Collections.Generic;
+
 	/**
 	 * Abstract class Problem. Given an initial state and goal state of type E,
 	 * use other defined methods to 
@@ -274,6 +275,70 @@ namespace Problem
 		{
 			return 1;
 
+		}
+	}
+
+	/*!
+	 * Create an abstract class for defining problem states. A
+	 * state in the context of a problem could possible be a
+	 * wide variety of types - a number, a string, an data structure
+	 * an object. Keep it as general as possible. Make it 
+	 * extand IEquatable because then comparisons for equality
+	 * become possible
+	 *
+	 */
+	abstract public class AbstractProblemState<S> : IEquatable<AbstractProblemState<S> >
+	{
+		public S state;
+		public AbstractProblemState(S s)
+		{
+			state = s;
+		}
+
+		protected AbstractProblemState() {}
+
+		/*public S State
+		{
+			get {return state;}
+			set {state = value;}
+		}*/
+
+		public override bool Equals(object obj)
+		{
+			return this.Equals(obj as AbstractProblemState<S>);
+		}
+
+		abstract public bool Equals(AbstractProblemState<S> state);
+	}
+
+	public class NPuzzleProblemState: AbstractProblemState<int[]>
+	{
+		public override bool Equals(AbstractProblemState<int[]> state) 
+		{
+			if (Object.ReferenceEquals(state.state, null))
+			{
+				return false;
+			}
+
+			if (Object.ReferenceEquals(this.state, state.state)) 
+			{
+				return true;
+			}
+
+			if (this.state.GetType() != state.state.GetType())
+				return false;
+
+
+			int l = state.state.Length;
+
+			if (this.state.Length != l) return false;
+
+			for (int i = 0; i < l; i++) 
+			{
+				if (state.state[i] != this.state[i]) return false;
+			}
+
+			return true;
 		}
 	}
 }

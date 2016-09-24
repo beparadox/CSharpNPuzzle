@@ -24,10 +24,10 @@ namespace NPuzzleTests
 		{
 			int[] goal = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 			// int[] initial = NPuzzleUtils.GenerateInitState();
-			SearchTreeNode.Node<int[],int,int> node = new SearchTreeNode.Node<int[],int,int>(goal);
+			SearchTreeNode.Node<int[],int,int> rootNode= new SearchTreeNode.Node<int[],int,int>(goal);
 			List<SearchTreeNode.Node<int[],int,int> > expandedNodes;
 			Problem.NPuzzleProblem problem = NPuzzleUtils.CreateProblem(9);
-			expandedNodes = node.Expand(problem);
+			expandedNodes = rootNode.Expand(problem);
 
 
 			List<SearchTreeNode.Node<int[],int,int> > testNodes = new List<SearchTreeNode.Node<int[],int,int> >();
@@ -37,18 +37,37 @@ namespace NPuzzleTests
 			int[] s1 = {1, 2, 3, 4, 5, 9, 7, 8, 6};
 			//! state resulting from -1
 			int[] s2 = {1, 2, 3, 4, 5, 6, 7, 9, 8};
-			SearchTreeNode.Node<int[], int, int> node2 = new SearchTreeNode.Node<int[], int, int>(s1, node, 2, 1); 
+			SearchTreeNode.Node<int[], int, int> node2 = new SearchTreeNode.Node<int[], int, int>(s1, rootNode, 2, 1); 
 
-			SearchTreeNode.Node<int[], int, int> node3 = new SearchTreeNode.Node<int[], int, int>(s2, node, -1, 1); 
+			SearchTreeNode.Node<int[], int, int> node3 = new SearchTreeNode.Node<int[], int, int>(s2, rootNode, -1, 1); 
 			testNodes.Add(node3);
 			testNodes.Add(node2);
-			// CollectionAssert.AreEquivalent(testNodes, expandedNodes);
-			// Assert.That(testNodes, Is.EquivalentTo(expandedNodes));
 			Assert.AreEqual(testNodes.Count, expandedNodes.Count);
+			Assert.AreEqual(expandedNodes[0].state, node3.state);
+
+			// Assert.True(expandedNodes[0].state.Equals( node3.state));
+			Assert.AreEqual(expandedNodes[0].parent, node3.parent);
+
+			Assert.True(expandedNodes[0].parent.Equals(node3.parent));
+			Assert.AreEqual(expandedNodes[0].action, node3.action);
+
+			Assert.True(expandedNodes[0].action.Equals(node3.action));
+			Assert.AreEqual(expandedNodes[0].depth, node3.depth);
+			Assert.True(expandedNodes[0].depth.Equals( node3.depth));
+
+			Assert.AreEqual(expandedNodes[0].pathCost, node3.pathCost);
+
+			Assert.True(expandedNodes[0].pathCost.Equals(node3.pathCost));
+			// Assert.True(expandedNodes[0].Equals(node3));
+			// Assert.AreEqual(expandedNodes[0], node3);
+
+			// Assert.AreEqual(expandedNodes[1], node2);
+			// CollectionAssert.AreEqual(testNodes, expandedNodes);
+			// Assert.That(testNodes, Is.EquivalentTo(expandedNodes));
 		}
 
 		[Test]
-                public void ProblemTestChildNode()
+                public void TestChildNode()
 		{
 
 			int[] goal = {1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -82,6 +101,157 @@ namespace NPuzzleTests
 			Assert.AreEqual(expectedNode2.action, 2);
 			Assert.AreEqual(expectedNode2.depth, 1);
 
+		}
+
+		[Test]
+                public void TestPath()
+		{
+			int[] goal = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+			//! -1
+			int[] s1 = {1, 2, 3, 4, 5, 6, 7, 9, 8};
+			//! 2
+			int[] s2 = {1, 2, 3, 4, 9, 6, 7, 5, 8};
+
+			//! 1
+			int[] s3 = {1, 2, 3, 4, 6, 9, 7, 5, 8};
+
+			//! 2
+			int[] s4 = {1, 2, 9, 4, 6, 3, 7, 5, 8};
+
+			//! -1
+			int[] s5 = {1, 9, 2, 4, 6, 3, 7, 5, 8};
+
+			SearchTreeNode.Node<int[],int,int> rootNode= new SearchTreeNode.Node<int[],int,int>(goal);
+
+			SearchTreeNode.Node<int[],int,int> node1 = new SearchTreeNode.Node<int[],int,int>(s1, rootNode, -1, 1);
+
+			SearchTreeNode.Node<int[],int,int> node2 = new SearchTreeNode.Node<int[],int,int>(s2, node1, 2, 1);
+
+			SearchTreeNode.Node<int[],int,int> node3 = new SearchTreeNode.Node<int[],int,int>(s3, node2, 1, 1);
+
+			SearchTreeNode.Node<int[],int,int> node4 = new SearchTreeNode.Node<int[],int,int>(s4, node3, 2, 1);
+
+			SearchTreeNode.Node<int[],int,int> node5 = new SearchTreeNode.Node<int[],int,int>(s5, node4, -1, 1);
+
+			List<SearchTreeNode.Node<int[],int,int> > path = node5.Path();
+			Assert.AreEqual(s5, path[0].state);
+			Assert.AreEqual(path[0].action, -1);
+
+			Assert.AreEqual(s4, path[1].state);
+			Assert.AreEqual(path[1].action, 2);
+
+			Assert.AreEqual(s3, path[2].state);
+
+			Assert.AreEqual(s2, path[3].state);
+
+
+
+		}
+
+		public static List<SearchTreeNode.NPuzzleNode> CreateNodesForTesting()
+		{
+			//! md = 0
+                        int[] goal = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+			//! -1, md = 1
+			int[] s1 = {1, 2, 3, 4, 5, 6, 7, 9, 8};
+			//! 2, md = 2
+			int[] s2 = {1, 2, 3, 4, 9, 6, 7, 5, 8};
+
+			//! 1, md 3
+			int[] s3 = {1, 2, 3, 4, 6, 9, 7, 5, 8};
+
+			//! 2 md = 4
+			int[] s4 = {1, 2, 9, 4, 6, 3, 7, 5, 8};
+
+			//! -1 md = 5
+			int[] s5 = {1, 9, 2, 4, 6, 3, 7, 5, 8};
+		
+                        //! -1 md = 6
+			int[] s6 = {9, 1, 2, 4, 6, 3, 7, 5, 8};
+
+			SearchTreeNode.NPuzzleNode rootNode= new SearchTreeNode.NPuzzleNode(goal);
+
+			SearchTreeNode.NPuzzleNode node1 = new SearchTreeNode.NPuzzleNode(s1, rootNode, -1, 1);
+
+			SearchTreeNode.NPuzzleNode node2 = new SearchTreeNode.NPuzzleNode(s2, node1, 2, 1);
+
+			SearchTreeNode.NPuzzleNode node3 = new SearchTreeNode.NPuzzleNode(s3, node2, 1, 1);
+
+			SearchTreeNode.NPuzzleNode node4 = new SearchTreeNode.NPuzzleNode(s4, node3, 2, 1);
+
+			SearchTreeNode.NPuzzleNode node5 = new SearchTreeNode.NPuzzleNode(s5, node4, -1, 1);
+
+			SearchTreeNode.NPuzzleNode node6 = new SearchTreeNode.NPuzzleNode(s6, node5, -1, 1);
+
+			List<SearchTreeNode.NPuzzleNode> nodes = new List<SearchTreeNode.NPuzzleNode>();
+			nodes.Add(rootNode);
+			nodes.Add(node1);
+
+			nodes.Add(node2);
+
+			nodes.Add(node3);
+
+			nodes.Add(node4);
+
+			nodes.Add(node5);
+
+			nodes.Add(node6);
+
+			return nodes;
+		}
+
+		[Test]
+                public void TestSolution()
+		{
+                        int[] goal = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+			//! -1
+			int[] s1 = {1, 2, 3, 4, 5, 6, 7, 9, 8};
+			//! 2
+			int[] s2 = {1, 2, 3, 4, 9, 6, 7, 5, 8};
+
+			//! 1
+			int[] s3 = {1, 2, 3, 4, 6, 9, 7, 5, 8};
+
+			//! 2
+			int[] s4 = {1, 2, 9, 4, 6, 3, 7, 5, 8};
+
+			//! -1
+			int[] s5 = {1, 9, 2, 4, 6, 3, 7, 5, 8};
+		
+                        //! -1
+			int[] s6 = {9, 1, 2, 4, 6, 3, 7, 5, 8};
+
+			SearchTreeNode.Node<int[],int,int> rootNode= new SearchTreeNode.Node<int[],int,int>(goal);
+
+			SearchTreeNode.Node<int[],int,int> node1 = new SearchTreeNode.Node<int[],int,int>(s1, rootNode, -1, 1);
+
+			SearchTreeNode.Node<int[],int,int> node2 = new SearchTreeNode.Node<int[],int,int>(s2, node1, 2, 1);
+
+			SearchTreeNode.Node<int[],int,int> node3 = new SearchTreeNode.Node<int[],int,int>(s3, node2, 1, 1);
+
+			SearchTreeNode.Node<int[],int,int> node4 = new SearchTreeNode.Node<int[],int,int>(s4, node3, 2, 1);
+
+			SearchTreeNode.Node<int[],int,int> node5 = new SearchTreeNode.Node<int[],int,int>(s5, node4, -1, 1);
+
+			SearchTreeNode.Node<int[],int,int> node6 = new SearchTreeNode.Node<int[],int,int>(s6, node5, -1, 1);
+
+			List<int> solution = node6.Solution();
+
+			Assert.AreEqual(solution[0], -1);
+
+			Assert.AreEqual(solution[1], -1);
+
+			Assert.AreEqual(solution[2], 2);
+		}
+
+		[Test]
+                public void TestArrayEquality()
+		{
+			int[] state = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+                        Type valueType = state.GetType();
+			var expectedType = typeof(Array);
+			Assert.True(valueType.IsArray);
+		//	Assert.True(expectedType.IsAssignableFrom(valueType.GetElementType()));
 		}
 	}
 }

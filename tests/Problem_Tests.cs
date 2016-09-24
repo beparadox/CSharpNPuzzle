@@ -98,7 +98,8 @@ namespace NPuzzleTests
 			Assert.AreEqual(problem.GetEmptyIndex(state2), 8);
 			int[] state3 = {1, 2, 3, 4, 5, 6, 7, 8, 8};
 
-			Assert.Throws<NPuzzleUtils.MissingEmptyElementException>(() =>problem.GetEmptyIndex(state3)); 
+			// Assert.Throws<NPuzzleUtils.MissingEmptyElementException>(() =>problem.GetEmptyIndex(state3)); 
+			Assert.AreEqual(problem.GetEmptyIndex(state3), -1);
 		}
 
 		[Test]
