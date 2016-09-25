@@ -152,8 +152,11 @@ namespace NPuzzleTests
 		{
 			//! md = 0
                         int[] goal = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-			//! -1, md = 1
+			//! -1 (from goal), md = 1
 			int[] s1 = {1, 2, 3, 4, 5, 6, 7, 9, 8};
+
+			//! md = 1
+			int[] s7 = {1, 2, 3, 4, 5, 9, 7, 8, 6};
 			//! 2, md = 2
 			int[] s2 = {1, 2, 3, 4, 9, 6, 7, 5, 8};
 
@@ -169,6 +172,7 @@ namespace NPuzzleTests
                         //! -1 md = 6
 			int[] s6 = {9, 1, 2, 4, 6, 3, 7, 5, 8};
 
+			//! TODO: Could refactor this. Create dictionaries with state, action, md value, and use a loop
 			SearchTreeNode.NPuzzleNode rootNode= new SearchTreeNode.NPuzzleNode(goal);
 
 			SearchTreeNode.NPuzzleNode node1 = new SearchTreeNode.NPuzzleNode(s1, rootNode, -1, 1);
@@ -183,6 +187,8 @@ namespace NPuzzleTests
 
 			SearchTreeNode.NPuzzleNode node6 = new SearchTreeNode.NPuzzleNode(s6, node5, -1, 1);
 
+			SearchTreeNode.NPuzzleNode node7 = new SearchTreeNode.NPuzzleNode(s7, rootNode, 2, 1);
+
 			List<SearchTreeNode.NPuzzleNode> nodes = new List<SearchTreeNode.NPuzzleNode>();
 			nodes.Add(rootNode);
 			nodes.Add(node1);
@@ -196,6 +202,8 @@ namespace NPuzzleTests
 			nodes.Add(node5);
 
 			nodes.Add(node6);
+
+			nodes.Add(node7);
 
 			return nodes;
 		}
