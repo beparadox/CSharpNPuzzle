@@ -1,5 +1,6 @@
-SRC_FILES= Problem.cs Node.cs NPuzzleUtils.cs Heuristics.cs Search.cs Frontier.cs 
-TESTS = NPuzzle_Tests.cs Heuristics_Tests.cs NPuzzleUtils_Tests.cs Search_Tests.cs Node_Tests.cs Problem_Tests.cs 
+SRC_FILES = Problem.cs Node.cs NPuzzleUtils.cs Heuristics.cs Search.cs Frontier.cs 
+MAIN_SRC = NPuzzle.cs
+TESTS = NPuzzle_Tests.cs Heuristics_Tests.cs NPuzzleUtils_Tests.cs Search_Tests.cs Node_Tests.cs Problem_Tests.cs Frontier_Tests.cs
 
 TEST_FILES = $(addprefix "tests/", $(TESTS))
 
@@ -8,13 +9,12 @@ TEST_FILES = $(addprefix "tests/", $(TESTS))
 all: run
 
 NPuzzle.exe:
-	@mcs NPuzzle.cs $(SRC_FILES) -pkg:dotnet
+	@mcs $(MAIN_SRC) $(SRC_FILES) -pkg:dotnet
 
 clean:
 	@rm -f *.exe tests/*.exe
 
 test: tests/NPuzzle_Tests.exe
-	#@mono tests/NPuzzle_Tests.exe
 	@nunit-console tests/NPuzzle_Tests.exe
 
 tests/NPuzzle_Tests.exe:
