@@ -20,6 +20,14 @@ test: tests/NPuzzle_Tests.exe
 tests/NPuzzle_Tests.exe:
 	@mcs $(TEST_FILES) $(SRC_FILES) -pkg:nunit
 
+test-problem: tests/NPuzzle_TestProblem.exe
+	@nunit-console tests/NPuzzle_TestProblem.exe
+
+tests/NPuzzle_TestProblem.exe:
+	@mcs NPuzzle_Tests.cs Problem_Tests.cs Problem.cs
+
+
+
 run: NPuzzle.exe
 	@mono NPuzzle.exe
 

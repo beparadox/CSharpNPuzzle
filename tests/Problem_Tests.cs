@@ -7,10 +7,10 @@ namespace NPuzzleTests
 	[TestFixture]
 	public class Problem_Tests
 	{
-		private Problem.NPuzzleProblem CreateProblem(int[] initial)
+		private Problem.NPuzzleProblem<int[], int, int> CreateProblem(int[] initial)
 		{
 			int[] goal = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-			Problem.NPuzzleProblem problem = new Problem.NPuzzleProblem(goal, initial); 
+			Problem.NPuzzleProblem<int[], int, int> problem = new Problem.NPuzzleProblem<int[], int, int>(goal, initial); 
 			return problem;
 		}
 	
@@ -19,17 +19,44 @@ namespace NPuzzleTests
 		{
 			int[] goal = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 			int[] initial = {1, 2, 3, 4, 5, 6, 7, 9, 8};
-			Problem.NPuzzleProblem problem = new Problem.NPuzzleProblem(goal, initial); 
+			Problem.NPuzzleProblem<int[], int, int> problem = new Problem.NPuzzleProblem<int[], int, int>(goal, initial); 
 			problem.Actions(goal);
 
-			Assert.Throws<NPuzzleUtils.InvalidNPuzzleStatesException>(() =>new Problem.NPuzzleProblem(initial, goal)); 
+			Assert.Throws<NPuzzleUtils.InvalidNPuzzleStatesException>(() =>new Problem.NPuzzleProblem<int[],int,int>(initial, goal)); 
+		}
+
+		[Test]
+                public void TestNPuzzleInitialState()
+		{
+                     	int[] goal = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+			int[] initial = {1, 2, 3, 4, 5, 6, 7, 9, 8};
+			try {
+			Problem.NPuzzleProblem<int[], int, int> problem = new Problem.NPuzzleProblem<int[], int, int>(goal, initial); 
+                        Assert.NotNull(problem);
+			Assert.NotNull(problem.InitialState);
+			Assert.AreEqual(problem.InitialState, initial);
+			Problem.AbstractProblem<int[],int,int> p2 = new Problem.NPuzzleProblem<int[], int, int>(goal, initial);
+			Assert.NotNull(p2);
+			Assert.True(p2.GoalTest(goal));
+			Assert.AreEqual(p2.Result(initial, 1), goal);
+			List<int> results = new List<int>();
+			results.Add(1);
+			results.Add(-1);
+			results.Add(2);
+			Assert.AreEqual(p2.Actions(initial), results);
+
+			} catch(NPuzzleUtils.InvalidNPuzzleStatesException ex) {
+
+			}
+
+			
 		}
 
 		[Test]
                 public void TestNPuzzleProblemActions()
 		{
 			int[] initial = {1, 2, 3, 4, 5, 6, 7, 9, 8};
-			Problem.NPuzzleProblem problem = CreateProblem(initial);
+			Problem.NPuzzleProblem<int[], int, int> problem = CreateProblem(initial);
 			List<int> actions = problem.Actions(initial);
 			List<int> expected = new List<int>();
 			expected.Add(-1);
@@ -66,7 +93,7 @@ namespace NPuzzleTests
                 public void TestNPuzzleProblemAcceptableAction()
 		{
 			int[] state = {5, 6, 2, 8, 9, 3, 1, 4, 7};
-			Problem.NPuzzleProblem problem =  CreateProblem(state);
+			Problem.NPuzzleProblem<int[], int, int> problem =  CreateProblem(state);
 			Assert.True(problem.AcceptableAction(state, 4, -1));
 			Assert.True(problem.AcceptableAction(state, 4, 1));
 
@@ -91,7 +118,7 @@ namespace NPuzzleTests
                 public void TestNPuzzleProblemGetEmptyIndex()
 		{
 			int[] state = {9,7,3,6,5,2,8,1,4};
-			Problem.NPuzzleProblem problem = CreateProblem(state);
+			Problem.NPuzzleProblem<int[], int, int> problem = CreateProblem(state);
 			Assert.AreEqual(problem.GetEmptyIndex(state), 0);
 			int[] state2 = {1, 7, 6, 5, 4, 3, 8, 2, 9};
 
@@ -111,7 +138,7 @@ namespace NPuzzleTests
 			int[] r1 = {7,6,4,5,8,2,9,3,1};
 			int[] r2 = {9,6,4,7,8,2,5,3,1};
 			int[] r3 = {7,6,4,8,9,2,5,3,1};
-			Problem.NPuzzleProblem problem = CreateProblem(state);
+			Problem.NPuzzleProblem<int[], int, int> problem = CreateProblem(state);
 			CollectionAssert.AreEquivalent(r1, problem.Result(state, -2));
 
 			CollectionAssert.AreEquivalent(r2, problem.Result(state, 2));
@@ -127,7 +154,7 @@ namespace NPuzzleTests
 		{
 			int[] state = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 			int[] state2 = {1, 2, 3, 4, 5, 6, 7, 9, 8};
-			Problem.NPuzzleProblem problem = CreateProblem(state);
+			Problem.NPuzzleProblem<int[], int, int> problem = CreateProblem(state);
 			Assert.False(problem.GoalTest(state2));
 			Assert.True(problem.GoalTest(state));
 

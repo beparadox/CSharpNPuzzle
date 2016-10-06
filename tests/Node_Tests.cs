@@ -26,7 +26,7 @@ namespace NPuzzleTests
 			// int[] initial = NPuzzleUtils.GenerateInitState();
 			SearchTreeNode.Node<int[],int,int> rootNode= new SearchTreeNode.Node<int[],int,int>(goal);
 			List<SearchTreeNode.Node<int[],int,int> > expandedNodes;
-			Problem.NPuzzleProblem problem = NPuzzleUtils.CreateProblem(9);
+			Problem.NPuzzleProblem<int[], int, int> problem = NPuzzleUtils.CreateProblem(9);
 			expandedNodes = rootNode.Expand(problem);
 
 
@@ -81,7 +81,7 @@ namespace NPuzzleTests
 
 			SearchTreeNode.Node<int[],int,int> childNode2 = new SearchTreeNode.Node<int[],int,int>(s1, node, 2, 1);
 
-			Problem.NPuzzleProblem problem = NPuzzleUtils.CreateProblem(9);
+			Problem.NPuzzleProblem<int[], int, int> problem = NPuzzleUtils.CreateProblem(9);
 			SearchTreeNode.Node<int[],int,int> expectedNode = node.ChildNode(problem, -1);
 
 			SearchTreeNode.Node<int[],int,int> expectedNode2 = node.ChildNode(problem, 2);
@@ -148,7 +148,7 @@ namespace NPuzzleTests
 
 		}
 
-		public static List<SearchTreeNode.NPuzzleNode> CreateNodesForTesting()
+		public static List<SearchTreeNode.NPuzzleNode<int[],int,int> > CreateNodesForTesting()
 		{
 			//! md = 0
                         int[] goal = {1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -173,23 +173,23 @@ namespace NPuzzleTests
 			int[] s6 = {9, 1, 2, 4, 6, 3, 7, 5, 8};
 
 			//! TODO: Could refactor this. Create dictionaries with state, action, md value, and use a loop
-			SearchTreeNode.NPuzzleNode rootNode= new SearchTreeNode.NPuzzleNode(goal);
+			SearchTreeNode.NPuzzleNode<int[],int,int> rootNode= new SearchTreeNode.NPuzzleNode<int[],int,int>(goal);
 
-			SearchTreeNode.NPuzzleNode node1 = new SearchTreeNode.NPuzzleNode(s1, rootNode, -1, 1);
+			SearchTreeNode.NPuzzleNode<int[],int,int> node1 = new SearchTreeNode.NPuzzleNode<int[],int,int>(s1, rootNode, -1, 1);
 
-			SearchTreeNode.NPuzzleNode node2 = new SearchTreeNode.NPuzzleNode(s2, node1, 2, 1);
+			SearchTreeNode.NPuzzleNode<int[],int,int> node2 = new SearchTreeNode.NPuzzleNode<int[],int,int>(s2, node1, 2, 1);
 
-			SearchTreeNode.NPuzzleNode node3 = new SearchTreeNode.NPuzzleNode(s3, node2, 1, 1);
+			SearchTreeNode.NPuzzleNode<int[],int,int> node3 = new SearchTreeNode.NPuzzleNode<int[],int,int>(s3, node2, 1, 1);
 
-			SearchTreeNode.NPuzzleNode node4 = new SearchTreeNode.NPuzzleNode(s4, node3, 2, 1);
+			SearchTreeNode.NPuzzleNode<int[],int,int> node4 = new SearchTreeNode.NPuzzleNode<int[],int,int>(s4, node3, 2, 1);
 
-			SearchTreeNode.NPuzzleNode node5 = new SearchTreeNode.NPuzzleNode(s5, node4, -1, 1);
+			SearchTreeNode.NPuzzleNode<int[],int,int> node5 = new SearchTreeNode.NPuzzleNode<int[],int,int>(s5, node4, -1, 1);
 
-			SearchTreeNode.NPuzzleNode node6 = new SearchTreeNode.NPuzzleNode(s6, node5, -1, 1);
+			SearchTreeNode.NPuzzleNode<int[],int,int> node6 = new SearchTreeNode.NPuzzleNode<int[],int,int>(s6, node5, -1, 1);
 
-			SearchTreeNode.NPuzzleNode node7 = new SearchTreeNode.NPuzzleNode(s7, rootNode, 2, 1);
+			SearchTreeNode.NPuzzleNode<int[],int,int> node7 = new SearchTreeNode.NPuzzleNode<int[],int,int>(s7, rootNode, 2, 1);
 
-			List<SearchTreeNode.NPuzzleNode> nodes = new List<SearchTreeNode.NPuzzleNode>();
+			List<SearchTreeNode.NPuzzleNode<int[],int,int>> nodes = new List<SearchTreeNode.NPuzzleNode<int[],int,int>>();
 			nodes.Add(rootNode);
 			nodes.Add(node1);
 
@@ -260,6 +260,14 @@ namespace NPuzzleTests
 			var expectedType = typeof(Array);
 			Assert.True(valueType.IsArray);
 		//	Assert.True(expectedType.IsAssignableFrom(valueType.GetElementType()));
+		}
+
+		[Test]
+                public void TestNodeTypeCasting()
+		{
+
+			int[] s6 = {9, 1, 2, 4, 6, 3, 7, 5, 8};
+			SearchTreeNode.Node<int[],int,int> rootNode= new SearchTreeNode.Node<int[],int,int>(s6);
 		}
 	}
 }

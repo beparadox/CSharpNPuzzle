@@ -36,14 +36,14 @@ namespace NPuzzleTests
 
 			//! 2 + 2 + 1 + 1 + 2 = 8
 			int[] s8 = {1, 6, 3, 8, 4, 5, 7, 2, 9};
-			SearchTreeNode.NPuzzleNode node8 = new SearchTreeNode.NPuzzleNode(s8);
+			SearchTreeNode.NPuzzleNode<int[],int,int> node8 = new SearchTreeNode.NPuzzleNode<int[],int,int>(s8);
 
 			Assert.AreEqual(NPuzzleHeuristics.ManhattanDistance(node8), 8);
 
-			SearchTreeNode.NPuzzleNode node7 = new SearchTreeNode.NPuzzleNode(s7);
+			SearchTreeNode.NPuzzleNode<int[],int,int> node7 = new SearchTreeNode.NPuzzleNode<int[],int,int>(s7);
 			Assert.AreEqual(NPuzzleHeuristics.ManhattanDistance(node7), 12);
 
-			List<SearchTreeNode.NPuzzleNode> nodes = TestNode.CreateNodesForTesting();
+			List<SearchTreeNode.NPuzzleNode<int[],int,int>> nodes = TestNode.CreateNodesForTesting();
 
 			Assert.AreEqual(nodes[0].state, goal);
 			Assert.AreEqual(NPuzzleHeuristics.ManhattanDistance(nodes[0]), 0);

@@ -125,7 +125,7 @@ namespace SearchTreeNode
 		}
 	}
 
-	public class NPuzzleNode : Node<int[], int, int>
+	public class NPuzzleNode<E, A, C> : Node<int[], int, int>
 	{
 		public NPuzzleNode(int[] state, Node<int[], int, int> parent=null, int action=default(int), int path_cost=0) : base(state, parent, action, path_cost)
 		{

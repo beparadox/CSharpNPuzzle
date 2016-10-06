@@ -14,7 +14,7 @@ namespace NPuzzleTests
 			 */
                 public void TestDelegate()
 		{
-			Heuristics.HeuristicFunction<int[],int,int> handler = Heuristics.NPuzzleHeuristics.ManhattanDistance;
+			Heuristics.HeuristicFunction<int[],int,int,int> handler = Heuristics.NPuzzleHeuristics.ManhattanDistance;
 
 		}
 
@@ -22,135 +22,48 @@ namespace NPuzzleTests
                 public void TestSearchClassCreation()
 		{
 			int size = 9;
-			Problem.NPuzzleProblem problem = NPuzzleUtils.CreateProblem(size);
-			Heuristics.HeuristicFunction<int[],int,int> handler = Heuristics.NPuzzleHeuristics.ManhattanDistance;
-			Search.BestFirstGraphSearch<int[], int, int> bfgs = new Search.BestFirstGraphSearch<int[], int, int>(problem, handler);
+			Problem.NPuzzleProblem<int[], int, int> problem = NPuzzleUtils.CreateProblem(size);
+			Heuristics.HeuristicFunction<int[],int,int,int> handler = Heuristics.NPuzzleHeuristics.ManhattanDistance;
+			//Search.BestFirstGraphSearch<int[], int, int, int> bfgs = new Search.BestFirstGraphSearch<int[], int, int, int>(problem, handler);
 		}
 
-		private SortedList<int, List<SearchTreeNode.NPuzzleNode> > GetFrontier()
-		{
-			 SortedList<int, List<SearchTreeNode.NPuzzleNode> > frontier = new SortedList<int, List<SearchTreeNode.NPuzzleNode> >();
-
-			Heuristics.HeuristicFunction<int[],int,int> handler = Heuristics.NPuzzleHeuristics.ManhattanDistance;
-
-			List<SearchTreeNode.NPuzzleNode> nodes = TestNode.CreateNodesForTesting();
-
-			//! md = 12
-			int[] s7 = {6, 4, 3, 1, 9, 5, 8, 7, 2};
-			SearchTreeNode.NPuzzleNode node7 = new SearchTreeNode.NPuzzleNode(s7);
-			nodes.Add(node7);
-
-			//! 2 + 2 + 1 + 1 + 2 = 8
-			int[] s8 = {1, 6, 3, 8, 4, 5, 7, 2, 9};
-			SearchTreeNode.NPuzzleNode node8 = new SearchTreeNode.NPuzzleNode(s8);
-			nodes.Add(node8);
-			foreach(var node in nodes)
-			{
-				int md = handler(node);
-				//! if it contains the key,
-				//! there should already exist a
-				//! list at that index
-				if (frontier.ContainsKey(md))
-				{
-					//! get the list at key md
-					frontier[md].Add(node);
-
-				} else {
-					//! create a new list
-					//! add the node to it
-					//! set it in the sorted list at key md
-					List<SearchTreeNode.NPuzzleNode> list = new List<SearchTreeNode.NPuzzleNode>();
-					list.Add(node);
-					frontier.Add(md, list);
-				}
-			}
-
-			return frontier;
-		}
-
-		[Test]
-                public void TestFrontierContainsKey()
-		{
-			SortedList<int, List<SearchTreeNode.NPuzzleNode> > frontier = GetFrontier();
-			Assert.True(frontier.ContainsKey(0));
-			Assert.True(frontier.ContainsKey(1));
-                        Assert.True(frontier.ContainsKey(2));
-			Assert.True(frontier.ContainsKey(3));
-			Assert.True(frontier.ContainsKey(4));
-			Assert.True(frontier.ContainsKey(5));
-			Assert.True(frontier.ContainsKey(6));
-			Assert.True(frontier.ContainsKey(8));
-			Assert.True(frontier.ContainsKey(12));
-			//Assert.False(frontier.ContainsKey(13));
-			//Assert.False(frontier.ContainsKey(7));
-                        frontier.Remove(0);
-			Assert.AreEqual(frontier[1].Count, 2);
-			frontier[1].RemoveAt(0);
-			Assert.AreEqual(frontier[1].Count, 1);
-			frontier.Remove(1);
-			Assert.False(frontier.ContainsKey(0));
-			Assert.False(frontier.ContainsKey(1));
-		}
-
-		[Test]
-		public void TestFrontierCount()
-		{
-			SortedList<int, List<SearchTreeNode.NPuzzleNode> > frontier = GetFrontier();
-			Assert.AreEqual(frontier.Count, 9);
-			Assert.AreEqual(frontier[0].Count, 1);
-			Assert.AreEqual(frontier[1].Count, 2);
-			Assert.AreEqual(frontier[12].Count, 1);
-			frontier[12].RemoveAt(0);
-			Assert.AreEqual(frontier[12].Count, 0);
-			frontier.Remove(12);
-			Assert.AreEqual(frontier.Count, 8);
-		}
-
-		[Test]
-		public void TestFrontierIndexOfKey()
-		{
-
-			SortedList<int, List<SearchTreeNode.NPuzzleNode> > frontier = GetFrontier();
-			//! there should be keys of 0, 1, 2, 4, 5, 6, 8, and 12. 
-			Assert.AreEqual(frontier.IndexOfKey(3), 3);
-			Assert.AreEqual(frontier.IndexOfKey(8), 7);
-			Assert.AreEqual(frontier.IndexOfKey(12), 8);
-			Assert.True(frontier.Remove(0));
-			Assert.AreEqual(frontier.IndexOfKey(3), 2);
-			Assert.AreEqual(frontier.IndexOfKey(8), 6);
-			Assert.AreEqual(frontier.IndexOfKey(12), 7);
-		}
-
-		[Test]
-                public void TestFrontierKeys()
-	        {
-			SortedList<int, List<SearchTreeNode.NPuzzleNode> > frontier = GetFrontier();
-			IList<int> keys = frontier.Keys;
-			Assert.AreEqual(keys[0],0);
-			frontier.Remove(0);
-			Assert.AreEqual(keys[0],1);
-			frontier.Remove(1);
-			Assert.AreEqual(keys[0],2);
-		}
-
-		[Test]
-		/*! Test removing elements from the frontier
-		 */
-		public void TestRemoveFromFrontier()
-		{
-			SortedList<int, List<SearchTreeNode.NPuzzleNode> > frontier = GetFrontier();
-			IList<int> keys = frontier.Keys;
-                        // to remove an  
-			// frontier[keys[0]][0];
-			// frontier[keys[0]].Remove
-			// if (frontier[keys[0]].Count == 0) frontier.Remove(keys[0]);
-
-
-		}
 
 		[Test]
                 public void TestHashSet()
 		{
+                        int[] goal = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+			//! -1 (from goal), md = 1
+			int[] s1 = {1, 2, 3, 4, 5, 6, 7, 9, 8};
+			//! md = 1
+			int[] s7 = {1, 2, 3, 4, 5, 9, 7, 8, 6};
+			//! 2, md = 2
+			int[] s2 = {1, 2, 3, 4, 9, 6, 7, 5, 8};
+			//! 1, md 3
+			int[] s3 = {1, 2, 3, 4, 6, 9, 7, 5, 8};
+			//! 2 md = 4
+			int[] s4 = {1, 2, 9, 4, 6, 3, 7, 5, 8};
+			//! -1 md = 5
+			int[] s5 = {1, 9, 2, 4, 6, 3, 7, 5, 8};
+                        //! -1 md = 6
+			int[] s6 = {9, 1, 2, 4, 6, 3, 7, 5, 8};
+
+			HashSet<int[]> explored = new HashSet<int[]>();
+			explored.Add(goal);
+			explored.Add(s1);
+			explored.Add(s7);
+			explored.Add(s2);
+			explored.Add(s3);
+			//explored.Add(s4);
+			explored.Add(s5);
+			explored.Add(s6);
+
+			Assert.True(explored.Contains(goal));
+			Assert.True(explored.Contains(s1));
+			Assert.True(explored.Contains(s7));
+			Assert.True(explored.Contains(s2));
+			Assert.True(explored.Contains(s3));
+			Assert.True(explored.Contains(s5));
+			Assert.False(explored.Contains(s4));
 
 		}
 
@@ -162,6 +75,77 @@ namespace NPuzzleTests
                 [Test]
 		public void TestBestFirstGraphSearch()
 		{
+			int size = 9;
+			int[] goal = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+			int[] initial = NPuzzleUtils.GenerateInitState(size);
+			Assert.True(NPuzzleUtils.AcceptableState(initial));
+
+			Problem.NPuzzleProblem<int[], int, int> npuzzle = new Problem.NPuzzleProblem<int[], int, int>(goal, initial);
+
+			Assert.AreEqual(npuzzle.InitialState, initial);
+			Assert.AreEqual(npuzzle.GoalState, goal);
+
+			Heuristics.HeuristicFunction<int[],int,int,int> handler = Heuristics.NPuzzleHeuristics.ManhattanDistance;
+	
+                        try 
+			{
+
+        			Assert.AreEqual(npuzzle.InitialState, initial);
+			        //Search.BestFirstGraphSearch<int[],int,int,int> bfgs = new Search.BestFirstGraphSearch<int[],int,int,int>(npuzzle, handler);
+				
+			        Search.BestFirstGraphSearch<int[],int,int,int> bfgs = new Search.BestFirstGraphSearch<int[],int,int,int>(npuzzle, handler);
+
+		        SearchTreeNode.Node<int[],int,int> node = bfgs.Search();
+			} catch(NPuzzleUtils.InvalidProblemException ex) 
+			{
+				System.Console.WriteLine("There is an InvalidProblemException");
+				System.Console.WriteLine(ex.Message);
+				throw ex;
+
+			} catch(NPuzzleUtils.InvalidProblemPropertyException ex)
+			{
+
+				throw ex;
+			} catch (System.NullReferenceException ex)
+			{
+				Console.WriteLine(ex);
+
+
+			}
+
+		}
+
+		[Test]
+		public void TestSomething()
+		{
+                      	int size = 9;
+			int[] goal = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+			int[] initial = NPuzzleUtils.GenerateInitState(size);
+			Problem.NPuzzleProblem<int[], int, int> npuzzle = new Problem.NPuzzleProblem<int[], int, int>(goal, initial);
+
+                        HashSet<int[]> explored = new HashSet<int[]>();
+			//! first node in the frontier is the initialState
+			SearchTreeNode.Node<int[], int, int> node = new SearchTreeNode.Node<int[], int, int>(npuzzle.InitialState);
+
+
+		}
+
+		public abstract class BaseClass
+		{
+
+			public BaseClass()
+			{
+
+
+			}
+		}
+
+		public class DerivedClass : BaseClass
+		{
+			public DerivedClass()
+			{
+
+			}
 
 		}
 

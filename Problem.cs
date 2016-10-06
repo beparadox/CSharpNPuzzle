@@ -4,52 +4,100 @@ namespace Problem
         using System.Collections.Generic;
 
 	/**
-	 * Abstract class Problem. Given an initial state and goal state of type E,
+	 * Abstract class Problem. Given an initial state and goal state of type State,
 	 * use other defined methods to 
 	 *
 	 *
 	 */
-	abstract public class AbstractProblem<E, A, C>
+	public abstract class AbstractProblem<State, Action, Cost>
 	{
 		//! initial state
-		public E initialState;
+		private State initialState;
 		//! goal state
-		public E goalState;
+		private State goalState;
 
-		public AbstractProblem(E initial, E goal)
+		public int stank = 7;
+
+		public AbstractProblem(){}
+
+		public AbstractProblem(State goal, State initial)
 		{
-			initialState = initial;
-			goalState = goal;
-		}	
+			GoalState = goal;
+			InitialState = initial;
+		}
 
-		protected AbstractProblem() {}
+		public State InitialState
+		{
+			get {return initialState;}
+			set {initialState = value;}
+		}
+
+		public State GoalState
+		{
+			get {return goalState;}
+			set {goalState = value;}
+		}
+
+		//protected AbstractProblem() {}
 
 		/*! return a list of possible actions in the
 		 * given state 
 		 * */
-		abstract public List<A> Actions(E state);
+		abstract public List<Action> Actions(State state);
 
 		/*! return the state resulting from applying action
 		 * to state
 		 * */
-		abstract public E Result(E state, A action);
+		abstract public State Result(State state, Action action);
 
 		//! goal test
-		abstract public bool GoalTest(E state); 
+		abstract public bool GoalTest(State state); 
 
-		/*! get the pathCost given cost, which represents
+		/*! get the pathCostost given cost, which represents
 		 * the cost to get to state1, and the cost of
 		 * moving to state2 given action
 		 */
-		abstract public C PathCost(C cost, E state1, A action, E state2); 
+		abstract public Cost PathCost(Cost cost, State state1, Action action, State state2); 
+	}
+
+	public class DeterministicProblem<State, Action, Cost> : AbstractProblem<State, Action, Cost>
+	{
+		public DeterministicProblem(State goal, State initial)
+		{
+			InitialState = initial;
+			GoalState = goal;
+
+		}
+
+		public override List<Action> Actions(State state)
+		{
+			return default (List<Action>);
+		}
+
+		public override State Result(State state, Action action)
+		{
+			return default(State);
+		}
+
+		public override bool GoalTest(State state)
+		{
+			return true;
+		}
+
+		public override Cost PathCost(Cost cost, State state1, Action action, State state2)
+		{
+			return default(Cost);
+
+		}	
 	}
 
 	// close constructed type
-	public class NPuzzleProblem: AbstractProblem<int[], int, int>
+	public class NPuzzleProblem<State, Action, Cost>: AbstractProblem<int[], int, int>
 	{
-		public int dimension;
-		public int size;
-		public new int[] goalState, initialState;
+		private int dimension;
+		private int size;
+		new private int[] goalState, initialState;
+		new public int stank = 5;
 
 		public NPuzzleProblem(int[] goal, int[] initial)
 		{
@@ -59,7 +107,7 @@ namespace Problem
 			//!     not including inversions with the largest
 			//!     element in the state, which = size
 			//! 
-			string error = "Empty"; 
+			string error = "State empty"; 
 			bool errorFlag = false;
 
 			if (!EqualStateLengths(goal, initial)) {
@@ -67,7 +115,7 @@ namespace Problem
 				errorFlag = true;
 			} else 
                         if (!ValidStateLength(goal)) {
-				error = "The lengt of a state should be equal to the square of an integer.";
+				error = "The length of a state should be equal to the square of an integer.";
 				errorFlag = true;
 			} else
 			if (!ValidGoalState(goal)) {
@@ -88,12 +136,13 @@ namespace Problem
 			}
 
                       	double sqrt = Math.Sqrt(goal.Length);
-			goalState = goal;
-			initialState = initial;
+			GoalState = goal;
+			InitialState = initial;
 			size = goal.Length;
 			dimension = (int) sqrt;
 
 		}
+
 
 
 		private bool EqualStateLengths(int[] goal, int[] initial)
@@ -151,15 +200,14 @@ namespace Problem
 			}
 			List<int> actions = new List<int>();
 
+			//! if emptyIndex is in the rightmost column,
+			//! then adding one to it will be divisible by dimension
+			if ((emptyIndex + 1) % dimension != 0) actions.Add(1);
 
 			//! if emptyIndex is in the leftmost column,
 			//! it can be divided by dimension
 			//! Anything not in the leftmost column can be moved left, or - 1
 			if (emptyIndex % dimension != 0) actions.Add(-1);
-
-			//! if emptyIndex is in the rightmost column,
-			//! then adding one to it will be divisible by dimension
-			if ((emptyIndex + 1) % dimension != 0) actions.Add(1);
 
 			//! if emptyIndex is greater than or equal to dim, it
 			//! must not be in the first row, and hence
@@ -254,13 +302,13 @@ namespace Problem
 
 		public override bool GoalTest(int[] state) 
 		{
-			if (this.goalState.Length != state.Length) 
+			if (GoalState.Length != state.Length) 
 			{
 				return false;
 			}
 			for(int i = 0; i < state.Length; i++)
 			{
-				if (goalState[i] != state[i]) return false;
+				if (GoalState[i] != state[i]) return false;
 			}
 			return true;
 		}
@@ -271,7 +319,7 @@ namespace Problem
 
 		}
 
-		public int stepCost() 
+		public int StepCost() 
 		{
 			return 1;
 
@@ -279,11 +327,11 @@ namespace Problem
 	}
 
 	/*!
-	 * Create an abstract class for defining problem states. A
+	 * Consruct an abstract class for defining problem states. Action
 	 * state in the context of a problem could possible be a
 	 * wide variety of types - a number, a string, an data structure
 	 * an object. Keep it as general as possible. Make it 
-	 * extand IEquatable because then comparisons for equality
+	 * extand IStatequatable because then comparisons for equality
 	 * become possible
 	 *
 	 */

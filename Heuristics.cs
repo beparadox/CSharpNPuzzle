@@ -3,14 +3,14 @@ using Problem;
 
 namespace Heuristics
 {
-	public delegate C HeuristicFunction<S,A,C>(SearchTreeNode.Node<S, A, C> node);
+	public delegate K HeuristicFunction<S,A,C,K>(SearchTreeNode.Node<S, A, C> node) where K:IComparable; 
 
 	public class NPuzzleHeuristics {
 		/*!
 		 * Calculate the total city-block distance for the
 		 * state
 		 */
-		public static int ManhattanDistance(SearchTreeNode.Node<int[], int, int> node) 
+		public static int ManhattanDistance(SearchTreeNode.Node<int[],int,int> node) 
                 // public static int ManhattanDistance(SearchTreeNode.Node<S,A,C>
 		{
 			int md = 0;

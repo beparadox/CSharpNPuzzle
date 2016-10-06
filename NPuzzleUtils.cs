@@ -34,7 +34,7 @@ class NPuzzleUtils
 	/*!
 	 * Create a random instance of a problem
 	 */
-	public static Problem.NPuzzleProblem CreateProblem(int size)
+	public static Problem.NPuzzleProblem<int[], int, int> CreateProblem(int size)
 	{
 		if (!AcceptableLength(size))
 		{
@@ -48,7 +48,7 @@ class NPuzzleUtils
 			goalState[i] = i + 1;
 
 		initial = GenerateInitState(size);
-		Problem.NPuzzleProblem problem = new Problem.NPuzzleProblem(goalState, initial);
+		Problem.NPuzzleProblem<int[], int, int> problem = new Problem.NPuzzleProblem<int[], int, int>(goalState, initial);
 		return problem;
 	}
 
@@ -161,6 +161,28 @@ class NPuzzleUtils
 
 	}
 
+	public class InvalidProblemException : Exception
+	{
+		public InvalidProblemException(string message)
+		{
+			System.Console.WriteLine("An invalid problem was given for this search");
+			System.Console.WriteLine(message);
+
+		}
+
+	}
+
+	public class InvalidProblemPropertyException: Exception
+	{
+		public InvalidProblemPropertyException(string message)
+		{
+			System.Console.WriteLine("This instance of AbstractProblem has an invalid property");
+			System.Console.WriteLine(message);
+
+		}
+
+	}
+
 	public class InvalidEmptyIndexException : Exception
 	{
 		public InvalidEmptyIndexException(string message)
@@ -203,5 +225,17 @@ class NPuzzleUtils
 
 
 		}
+	}
+
+	public class NullSearchNodeException : Exception
+	{
+		public NullSearchNodeException(string message)
+		{
+			System.Console.WriteLine("Null node exception in search");
+			System.Console.WriteLine(message);
+
+		}
+
+
 	}
 }
