@@ -4,6 +4,7 @@ namespace NPuzzleTests
 	using System.Collections;
 	using System.Collections.Generic;
 	using NUnit.Framework;
+	using Heuristics;
 
 	[TestFixture]
 	public class TestFrontier
@@ -149,6 +150,22 @@ namespace NPuzzleTests
 			Assert.AreEqual(node.state, s2);
 			Assert.AreEqual(f.Count(), 6);
 
+			node = f.Pop();
+			Assert.AreEqual(f.Count(), 5);
+			node = f.Pop();
+			Assert.AreEqual(f.Count(), 4);
+			node = f.Pop();
+			Assert.AreEqual(f.Count(), 3);
+			node = f.Pop();
+			Assert.AreEqual(f.Count(), 2);
+			node = f.Pop();
+			Assert.AreEqual(f.Count(), 1);
+			node = f.Pop();
+			Assert.AreEqual(f.Count(), 0);
+
+
+
+
 
 
 		}
@@ -159,17 +176,124 @@ namespace NPuzzleTests
 			Search.Frontier<int, SearchTreeNode.NPuzzleNode<int[],int,int> > f = GetFrontier();
 			int c = f.Count();
 			int i = 0; 
+			int[] heurs = new int[f.Count()];
 
 			SearchTreeNode.NPuzzleNode<int[],int,int>  node;
 			while (f.Count() > 0)
 			{
 				node = f.Pop();
+				heurs[i] = NPuzzleHeuristics.ManhattanDistance(node);
 				i++;
+			}
+
+			for (int j = 0; j < i - 1; j++) 
+			{
+				Assert.True(heurs[j] <= heurs[j + 1]);
 			}
 			Assert.AreEqual(i, c);
 			Assert.IsNull(f.Pop());
 
 		}
 
+		[Test]
+         	public void TestAppendToo()
+		{
+
+			Search.Frontier<int, SearchTreeNode.NPuzzleNode<int[],int,int> > frontier = new Search.Frontier<int, SearchTreeNode.NPuzzleNode<int[],int,int> >();
+			int size = 9;
+			SearchTreeNode.NPuzzleNode<int[],int,int>[] nodeArray = new SearchTreeNode.NPuzzleNode<int[],int,int>[100];
+			SearchTreeNode.NPuzzleNode<int[],int,int> node; 
+			for (int i = 0; i < 100; i++) 
+			{
+				int[] istate = NPuzzleUtils.GenerateInitState(size);
+				node = new SearchTreeNode.NPuzzleNode<int[],int,int>(istate);
+				nodeArray[i] = node;
+				int heur = NPuzzleHeuristics.ManhattanDistance(node);
+				frontier.Append(heur, node);
+
+			}
+
+			for (int i = 0; i < 100; i++)
+			{
+				int heur = NPuzzleHeuristics.ManhattanDistance(nodeArray[i]);
+				Assert.True(frontier.In(heur, nodeArray[i]));
+			}
+			int j = 0;
+			int[] heurArray = new int[100];
+ 
+			while (frontier.Count() > 0)
+			{
+				node = frontier.Pop();
+				heurArray[j] = NPuzzleHeuristics.ManhattanDistance(node);
+				j++;
+			}
+
+			for (j = 0; j < 99; j++) 
+			{
+				Assert.True(heurArray[j] <= heurArray[j + 1]);
+			}
+
+		}
+
+		[Test]
+                public void PlayWithSortedList()
+		{
+			SortedList<int, List<int> > slist = new SortedList<int, List<int> >();
+			int[] keys = {1, 2, 3, 4, 5};
+			int[] values = new int[25];
+			for (int i = 1; i < 6; i++)
+			{
+
+			}
+		}
+
+		[Test]
+                public void TestHashSet()
+		{
+			HashSet<int[]> explored = new HashSet<int[]>();
+			int size = 9, num = 100;
+			int[][] states = new int[num][];
+			int[] state;
+			int[] goal = {1,2,3,4,5,6,7,8,9};
+			for (int i = 0; i < num; i++) 
+			{
+                                state = NPuzzleUtils.GenerateInitState(size);
+				states[i] = state;
+				explored.Add(state);
+			}
+			Assert.False(explored.Contains(goal));
+			explored.Add(goal);
+
+			for (int i = 0; i < num; i++)
+			{
+				Assert.True(explored.Contains(states[i]));
+			}
+			Assert.True(explored.Contains(goal));
+
+		}
+
+		[Test] 
+		public void TestListContains()
+		{
+			int[] s1 = {1,2,3,4,5,6,7,8,9};
+			int[] s2 = {1,2,3,4,5,9,7,8,6};
+			int[] s3 = {1,2,9,4,5,3,7,8,6};
+			int[] s4 = {1,2,9,4,5,3,7,8,6};
+			List<int[]> list = new List<int[]>();
+			list.Add(s1);
+			Assert.True(list.Contains(s1));
+			Assert.False(list.Contains(s2));
+			list.Add(s2);
+			Assert.True(list.Contains(s2));
+			Assert.False(list.Contains(s3));
+			list.Add(s3);
+			Assert.True(list.Contains(s3));
+
+			if (!list.Contains(s4)) 
+			{
+				Console.WriteLine("Write Line: s4 not in list");
+
+			}
+		}
 	}
 }

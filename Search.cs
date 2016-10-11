@@ -104,11 +104,13 @@ namespace Search
 		private Frontier<K, Node<E,A,C> > frontier;
 		private AbstractProblem<E, A, C> problem;
 		private Heuristics.HeuristicFunction<E,A,C,K> heurfun;
+		private Node<E,A,C> node;
 
-		public BestFirstGraphSearch(AbstractProblem<E, A, C> p, Heuristics.HeuristicFunction<E,A,C,K> hf) 
+		public BestFirstGraphSearch(AbstractProblem<E, A, C> p, Heuristics.HeuristicFunction<E,A,C,K> hf, Node<E,A,C> node) 
 		{
 			frontier = new Frontier<K, Node<E,A,C> >();
 			problem = p;
+			this.node = node;
 
 			if (problem.GetType() != typeof(NPuzzleProblem<int[],int,int>))
 			{
@@ -132,7 +134,7 @@ namespace Search
 
 			//! first node in the frontier is the InitialState
 
-			Node<E, A, C> node = new Node<E, A, C>(problem.InitialState);
+			//Node<E, A, C> node = new Node<E, A, C>(problem.InitialState);
 
 			//! if it happens to be the goal state, return it, we're done
 			if (problem.GoalTest(node.state)) return node;
@@ -147,11 +149,23 @@ namespace Search
 				{
 					NPuzzleUtils.NullSearchNodeException ex = new NPuzzleUtils.NullSearchNodeException("Node popper off frontier is null");
 					throw ex;
-
 				}
+				 int[] s = {1,2,3,4,5,6,7,8,9};
 				
+
 				if (problem.GoalTest(node.state)) return node;
 				explored.Add(node.state);
+				var enumerable = node.state as IEnumerable;
+				/*if (enumerable != null)
+					foreach(var item in enumerable)
+						Console.Write("{0} ", item);
+				Console.WriteLine();*/
+				if (node.GetType() != typeof(NPuzzleNode<int[],int,int>))
+				{
+					Console.WriteLine("is a NPuzzleNode");
+
+				}
+
 
 				node.Expand(problem).ForEach(
 						delegate(Node<E, A, C> n)
@@ -159,11 +173,12 @@ namespace Search
 						    heur = heurfun(n);
 						    if (!explored.Contains(n.state) && !frontier.In(heur, n))
 						    {
+						    Console.WriteLine("Appending to frontier");
 						       frontier.Append(heur, n);
-
-						    } else if (frontier.In(heur, n)) 
+						    } else 
 						    {
-						      //bool r = frontier.ReplaceIncumbent(
+
+						    Console.WriteLine("Nothing to append to frontier");
 
 						    }
 

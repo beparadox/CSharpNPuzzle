@@ -26,7 +26,11 @@ test-problem: tests/NPuzzle_TestProblem.exe
 tests/NPuzzle_TestProblem.exe:
 	@mcs NPuzzle_Tests.cs Problem_Tests.cs Problem.cs
 
+%: %.exe
+	@mono $<
 
+%.exe:
+	@mcs $*.cs Main.cs -pkg:nunit
 
 run: NPuzzle.exe
 	@mono NPuzzle.exe

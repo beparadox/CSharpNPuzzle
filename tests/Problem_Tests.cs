@@ -138,13 +138,28 @@ namespace NPuzzleTests
 			int[] r1 = {7,6,4,5,8,2,9,3,1};
 			int[] r2 = {9,6,4,7,8,2,5,3,1};
 			int[] r3 = {7,6,4,8,9,2,5,3,1};
+
+			int[] s2 = {8,5,2,9,3,7,4,6,1};
+
+			// 2
+			int[] s2r1 = {9,5,2,8,3,7,4,6,1};
+			// -2 
+			int[] s2r2 = {8,5,2,4,3,7,9,6,1};
+			// 1
+			int[] s2r3 = {8,5,2,3,9,7,4,6,1};
+
 			Problem.NPuzzleProblem<int[], int, int> problem = CreateProblem(state);
 			CollectionAssert.AreEquivalent(r1, problem.Result(state, -2));
 
 			CollectionAssert.AreEquivalent(r2, problem.Result(state, 2));
 
 			CollectionAssert.AreEquivalent(r3, problem.Result(state, 2));
+			
+			CollectionAssert.AreEquivalent(s2r1, problem.Result(s2, 2));
 
+			CollectionAssert.AreEquivalent(s2r2, problem.Result(s2, -2));
+
+			CollectionAssert.AreEquivalent(s2r3, problem.Result(s2, 1));
 			Assert.Throws<NPuzzleUtils.ResultAcceptableActionException>(() => problem.Result(state, 0));
 
 		}
@@ -157,7 +172,6 @@ namespace NPuzzleTests
 			Problem.NPuzzleProblem<int[], int, int> problem = CreateProblem(state);
 			Assert.False(problem.GoalTest(state2));
 			Assert.True(problem.GoalTest(state));
-
 		}
 	}
 }

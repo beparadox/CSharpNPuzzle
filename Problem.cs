@@ -4,8 +4,16 @@ namespace Problem
         using System.Collections.Generic;
 
 	/**
-	 * Abstract class Problem. Given an initial state and goal state of type State,
-	 * use other defined methods to 
+	 * Class AbstractProblem. A 'Problem' is philosophically
+	 * complex to define, so we'll have to settle for a simplified
+	 * abstraction. The primary characteristics of a problem,
+	 * at least for this implementation, are State, Action and
+	 * Cost. That is, the idea of a 'Problem' revolves around
+	 * the concept of 'state', 'action' and 'cost'. Basically,
+	 * there exists a state space, or set of all possible
+	 * states (possibly infinite), and a set of actions that
+	 * allows for transformations from one state to another
+	 * in the state space.
 	 *
 	 *
 	 */
@@ -16,15 +24,13 @@ namespace Problem
 		//! goal state
 		private State goalState;
 
-		public int stank = 7;
-
-		public AbstractProblem(){}
-
 		public AbstractProblem(State goal, State initial)
 		{
 			GoalState = goal;
 			InitialState = initial;
 		}
+
+		protected AbstractProblem() {}
 
 		public State InitialState
 		{
@@ -38,7 +44,6 @@ namespace Problem
 			set {goalState = value;}
 		}
 
-		//protected AbstractProblem() {}
 
 		/*! return a list of possible actions in the
 		 * given state 
@@ -97,7 +102,6 @@ namespace Problem
 		private int dimension;
 		private int size;
 		new private int[] goalState, initialState;
-		new public int stank = 5;
 
 		public NPuzzleProblem(int[] goal, int[] initial)
 		{
@@ -261,7 +265,6 @@ namespace Problem
 			for (int i = 0; i < state.Length; i++) {
 				if (state[i] == size) return i;
 			}
-
 			
 			return -1;
 		}
@@ -335,55 +338,56 @@ namespace Problem
 	 * become possible
 	 *
 	 */
-	abstract public class AbstractProblemState<S> : IEquatable<AbstractProblemState<S> >
+	abstract public class AbstractState<S> : IEquatable<AbstractState<S> >
 	{
-		public S state;
-		public AbstractProblemState(S s)
+		private S state;
+		public AbstractState(S s)
 		{
 			state = s;
 		}
 
-		protected AbstractProblemState() {}
+		protected AbstractState() {}
 
-		/*public S State
+		public S State
 		{
 			get {return state;}
 			set {state = value;}
-		}*/
+		}
 
 		public override bool Equals(object obj)
 		{
-			return this.Equals(obj as AbstractProblemState<S>);
+			return this.Equals(obj as AbstractState<S>);
 		}
 
-		abstract public bool Equals(AbstractProblemState<S> state);
+		abstract public bool Equals(AbstractState<S> state);
 	}
 
-	public class NPuzzleProblemState: AbstractProblemState<int[]>
+	public class NPuzzleState<S>: AbstractState<int[]> 
 	{
-		public override bool Equals(AbstractProblemState<int[]> state) 
+
+		public override bool Equals(AbstractState<int[]> s) 
 		{
-			if (Object.ReferenceEquals(state.state, null))
+			if (Object.ReferenceEquals(s.State, null))
 			{
 				return false;
 			}
 
-			if (Object.ReferenceEquals(this.state, state.state)) 
+			if (Object.ReferenceEquals(this.State, s.State)) 
 			{
 				return true;
 			}
 
-			if (this.state.GetType() != state.state.GetType())
+			if (this.state.GetType() != s.State.GetType())
 				return false;
 
 
-			int l = state.state.Length;
+			int l = s.State.Length;
 
-			if (this.state.Length != l) return false;
+			if (this.State.Length != l) return false;
 
 			for (int i = 0; i < l; i++) 
 			{
-				if (state.state[i] != this.state[i]) return false;
+				if (s.State[i] != this.State[i]) return false;
 			}
 
 			return true;

@@ -1,23 +1,29 @@
 namespace SearchTreeNode
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 
 	/*!
 	 * Node in a search tree. Contains pointers to both
 	 * the parent node and the state for the node. Also
 	 * includes the action that brought us to this state,
-	 * and the path cost to reach the node
+	 * and the path cost to reach the node, as well as the
+	 * depth in the search tree
+	 *
+	 * @class Node<State, Action, Cost>
+	 *   - State : this type defines the state for the problem.
 	 */
-	public class Node<E, A, C> : IEquatable<Node<E,A,C> >
+	public class Node<State, Action, Cost> : IEquatable<Node<State, Action, Cost> >
+		where State:IEquatable
 	{
-		public E state;
-		public Node<E,A,C> parent;
-		public A action;
-		public C pathCost;
+		public State state;
+		public Node<State, Action, Cost> parent;
+		public Action action;
+		public Cost pathCost;
 		public int depth;
 
-		public Node(E state, Node<E, A, C> parent=null, A action=default(A), C path_cost=default(C)) 
+		public Node(State state, Node<State, Action, Cost> parent=null,  Action action=default(Action), Cost path_cost=default(Cost)) 
 		{
 			this.state = state;
 			this.parent = parent;
@@ -31,39 +37,47 @@ namespace SearchTreeNode
 		protected Node() {}
 
 		/*! nodes reachable from this node */
-		public List<Node<E, A, C> > Expand(Problem.AbstractProblem<E,A,C> problem)
+		public List<Node<State, Action, Cost> > Expand(Problem.AbstractProblem<State,Action,Cost> problem)
 		{
-			List<Node<E, A, C> > nodes = new List<Node<E, A, C> >(); 
+			List<Node<State, Action, Cost> > nodes = new List<Node<State, Action, Cost> >(); 
 			problem.Actions(this.state).ForEach(
-					delegate(A action) 
+					delegate(Action action) 
 					{
 					        nodes.Add(this.ChildNode(problem, action));
 					}
 					);
 			return nodes;
-
 		}
 
-		public Node<E,A,C> ChildNode(Problem.AbstractProblem<E,A,C> problem, A action) 
+		/*!
+		 * Return the node containing the new state obtained
+		 * by applying the given action to this node's 
+		 * current state, with this node as the parent
+		 *
+		 * @method ChildNode
+		 * @param {Problem.AbstractProblem<State, Action, Cost>} - problem. A standard problem
+		 * @param {Action} action initiating a transition fro one state to the next
+		 * @return {SearchTreeNode.Node<State, Action, Cost>} node - node produced from the current node by Action action
+		 */
+		public Node<State,Action,Cost> ChildNode(Problem.AbstractProblem<State,Action,Cost> problem, Action action) 
 		{
-		        E nextState = problem.Result(this.state, action);	
-			Node<E,A,C> cnode = new Node<E,A,C>(nextState, this, action,problem.PathCost(this.pathCost, this.state, action, nextState)); 
+		        State nextState = problem.Result(this.state, action);	
+			Node<State,Action,Cost> cnode = new Node<State,Action,Cost>(nextState, this, action, problem.PathCost(this.pathCost, this.state, action, nextState)); 
 			return cnode;
-
 		}
 
 		/*!
 		 * return a list of actions that lead from the 
 		 * current node to the goal node
 		 */
-		public List<A> Solution() {
-			List<A> actions = new List<A>();
-			List<Node<E,A,C> > path = this.Path();
+		public List<Action> Solution() {
+			List<Action> actions = new List<Action>();
+			List<Node<State,Action,Cost> > path = this.Path();
 
-			foreach(Node<E,A,C> node in path) {
+			foreach(Node<State,Action,Cost> node in path) {
 				actions.Add(node.action);
 			}
-			/*path.ForEach(delegate(Node<E,A,C> node)
+			/*path.ForEach(delegate(Node<E,A,Cost> node)
 					{
 					actions.Add(node.action);
 					});*/
@@ -73,10 +87,10 @@ namespace SearchTreeNode
 		/*!
 		 * Return a path from this node back to the parent
 		 */
-		public List<Node<E,A,C> > Path()
+		public List<Node<State,Action,Cost> > Path()
 		{
-			Node<E,A,C> node = this;
-			List<Node<E,A,C> > path = new List<Node<E,A,C> >();
+			Node<State,Action,Cost> node = this;
+			List<Node<State,Action,Cost> > path = new List<Node<State,Action,Cost> >();
 			while (node != null) {
 				path.Add(node);
 				node = node.parent;
@@ -87,11 +101,13 @@ namespace SearchTreeNode
 
 		public override bool Equals(object obj)
 		{
-			return this.Equals(obj as Node<E,A,C>); 
+			return this.Equals(obj as Node<State,Action,Cost>); 
 		}
 
-		public bool Equals(Node<E,A,C> node)
+		public bool Equals(Node<State,Action,Cost> node)
 		{
+
+			Console.WriteLine("in NOde Equals");
 			if (Object.ReferenceEquals(node, null))
 			{
 				return false;
@@ -105,34 +121,26 @@ namespace SearchTreeNode
 			if (this.GetType() != node.GetType())
 				return false;
 
-			//! TODO: state.Equals(node.state) will check reference equality, not value
-			//! equality, which is what will be wanted  for different
-			//! node.states. Right now, there is no definition for 'E',
-			//! the generic type for state, in the definition
-			//! of the Node class
-			//! So if the state is an array or some other type, how do we go about testing for
-			// equality?
 
-
-			Type valueType = state.GetType();
-			var expectedType = typeof(Array);
-			if (valueType.IsArray && expectedType.IsAssignableFrom(valueType.GetElementType())) 
-			{
-
-			}
-			return (state.Equals(node.state)) && (parent.Equals(node.parent)) && (action.Equals(node.action)) && (depth == node.depth) && (pathCost.Equals(node.pathCost));
-
+			return (state.Equals(node.state));
 		}
 	}
 
-	public class NPuzzleNode<E, A, C> : Node<int[], int, int>
+	/*public class NPuzzleNode<State, Action, Cost> : Node<int[], int, int>
 	{
 		public NPuzzleNode(int[] state, Node<int[], int, int> parent=null, int action=default(int), int path_cost=0) : base(state, parent, action, path_cost)
 		{
 
 		}
-		public bool Equals(Node<int[],int,int> node)
+
+		public override bool Equals(object obj)
 		{
+			return this.Equals(obj as NPuzzleNode<State,Action,Cost>); 
+		}
+
+		public bool Equals(NPuzzleNode<State,Action,Cost> node)
+		{
+			Console.WriteLine("in NPuzzleNode Equals");
 			if (Object.ReferenceEquals(node, null))
 			{
 				return false;
@@ -159,12 +167,11 @@ namespace SearchTreeNode
 			{
 				stateFlag = false;
 			}
-		
 
 
 			return stateFlag && (parent.Equals(node.parent)) && (action.Equals(node.action)) && (depth == node.depth) && (pathCost.Equals(node.pathCost));
 
 		}
-
 	}
+	*/
 }

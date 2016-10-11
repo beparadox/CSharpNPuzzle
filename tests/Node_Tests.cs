@@ -23,8 +23,8 @@ namespace NPuzzleTests
                 public void TestExpand()
 		{
 			int[] goal = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-			// int[] initial = NPuzzleUtils.GenerateInitState();
 			SearchTreeNode.Node<int[],int,int> rootNode= new SearchTreeNode.Node<int[],int,int>(goal);
+
 			List<SearchTreeNode.Node<int[],int,int> > expandedNodes;
 			Problem.NPuzzleProblem<int[], int, int> problem = NPuzzleUtils.CreateProblem(9);
 			expandedNodes = rootNode.Expand(problem);

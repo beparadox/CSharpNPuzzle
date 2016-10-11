@@ -92,10 +92,11 @@ namespace NPuzzleTests
 
         			Assert.AreEqual(npuzzle.InitialState, initial);
 			        //Search.BestFirstGraphSearch<int[],int,int,int> bfgs = new Search.BestFirstGraphSearch<int[],int,int,int>(npuzzle, handler);
+			        SearchTreeNode.NPuzzleNode<int[],int,int> initialNode = new SearchTreeNode.NPuzzleNode<int[],int,int>(npuzzle.InitialState);	
 				
-			        Search.BestFirstGraphSearch<int[],int,int,int> bfgs = new Search.BestFirstGraphSearch<int[],int,int,int>(npuzzle, handler);
+			        Search.BestFirstGraphSearch<int[],int,int,int> bfgs = new Search.BestFirstGraphSearch<int[],int,int,int>(npuzzle, handler, initialNode);
 
-		        SearchTreeNode.Node<int[],int,int> node = bfgs.Search();
+		         SearchTreeNode.Node<int[],int,int> node = bfgs.Search();
 			} catch(NPuzzleUtils.InvalidProblemException ex) 
 			{
 				System.Console.WriteLine("There is an InvalidProblemException");
