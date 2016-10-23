@@ -3,22 +3,29 @@ namespace Search
 	using System;
 	using System.Collections.Generic;
 
-	public class Frontier<Key, Value> where Key:IComparable 
+	public class PriorityQueue<Key, Value> where Key:IComparable 
 	{
 		/*! Properties */
 		private SortedList<Key, List<Value> > frontier;
 		private IList<Key> keys;
+		private Heuristics.Heurfun<Key, Value> heurfun;
 
-		public Frontier()
+		public PriorityQueue(Heuristics.Heurfun<Key, Value> hf)
 		{
 			frontier = new SortedList<Key, List<Value> >();
 			keys = frontier.Keys;
+			heurfun = hf;
+		}
+
+		public Key Heurfun(Value v)
+		{
+			return heurfun(v);
 		}
 
 		/*!
 		 * Provide access to underlying frontier
 		 */
-		public SortedList<Key, List<Value> > GetFrontier()
+		public SortedList<Key, List<Value> > GetPriorityQueue()
 		{
 			return frontier;
 		}
@@ -48,7 +55,7 @@ namespace Search
 		 * @param {Value} v - the value 
 		 * @returns void
 		 */
-		public void Append(Key k, Value v)
+		public void Append(Value v)
 		{
 			//! first check if the frontier Contains
 			//! the given key. If so, simply add the
@@ -57,6 +64,7 @@ namespace Search
 			//! be created, the value added to it,
 			//! and the list added to the frontier
 			//! at the given key 
+			Key k = heurfun(v);
 			if (frontier.ContainsKey(k))
 			{
 				frontier[k].Add(v);
@@ -69,7 +77,7 @@ namespace Search
 		}
 
 		/*!
-		 * Remove an element from the Frontier. This will
+		 * Remove an element from the PriorityQueue. This will
 		 * remove the first element of the list
 		 * with the smallest key value
 		 *
@@ -100,11 +108,22 @@ namespace Search
 		 * @param {Value} - value to be located
 		 * @returns {bool}
 		 */
-		public bool In(Key k, Value v)
+		public bool InPriorityQueue(Value v)
 		{
-			if (frontier.ContainsKey(k))
+			//TODO:  Add heuristic function
+			//to PriorityQueue properties. That
+			//way, we can calculate the key
+			// when a value is passed in
+			Key k = heurfun(v);
+			if (frontier.ContainsKey(k)) {
+				if (frontier[k].Contains(v))
+					return true;
+			}
+
+			return false;
+			/*if (frontier.ContainsKey(k))
 			    return frontier[k].Contains(v);
-			else return false;
+			else return false;*/
 		}
 
 		/*!
@@ -113,31 +132,32 @@ namespace Search
 		 * of another value v2 only if v2 has a smaller
 		 * value as input to heur function than v
 		 *
+		 * @param {Key} k - value to possibly be replaced
 		 * @param {Value} v - value to possibly be replaced
 		 * @param {Func<Value, Key>} - function to calculate
 		 *   output of value with
 		 * @returns {bool} - true if value was replaced, 
 		 *   false otherwise
 		 */
-		public bool ReplaceIncumbent(Value v, Value v2, Func<Value, Key> heur)
+		public Value GetIncumbent(Value v)
 		{
-			int l = keys.Count;
-			int index;
-			for (int i = 0; i < l; i++)
+			Key k =  heurfun(v);
+			if (frontier.ContainsKey(k)) 
 			{
-				if(frontier[keys[i]].Contains(v))
-				{
-					index = frontier[keys[i]].IndexOf(v);
-					if (heur(v2).CompareTo(heur(v)) == -1 )
-					{
-						frontier[keys[i]].RemoveAt(index);
-						Append(heur(v2), v2);
-						return true;
-					}
-				}
+				int index = frontier[k].IndexOf(v);
+				return frontier[k][index];
 			}
+			else return default(Value);
+		}
 
-			return false;
+		public bool RemoveIncumbent(Value v)
+		{
+			Key k =  heurfun(v);
+			if (frontier.ContainsKey(k))
+			{
+				return frontier[k].Remove(v);
+			}
+			else return false;
 		}
 	}
 }

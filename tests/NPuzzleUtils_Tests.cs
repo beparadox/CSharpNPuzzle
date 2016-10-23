@@ -1,8 +1,10 @@
-using System;
-using NUnit.Framework;
-
 namespace NPuzzleTests
 {
+	using System;
+	using NUnit.Framework;
+	using Problem;
+
+
 	[TestFixture]
 	public class NPuzzleUtils_Tests
 	{
@@ -61,20 +63,20 @@ namespace NPuzzleTests
 		[Test]
 		public void GenerateInitStateTest()
 		{
-			int [] state;
+			NPuzzleState<int[]> state;
 			int size = 9;
 			state = NPuzzleUtils.GenerateInitState(size);
-			Assert.That(state, Has.Exactly(1).EqualTo(size));
+			Assert.That(state.State, Has.Exactly(1).EqualTo(size));
 
-			Assert.That(state, Has.Exactly(1).EqualTo(size - 4));
+			Assert.That(state.State, Has.Exactly(1).EqualTo(size - 4));
 
-			Assert.That(state, Has.Exactly(size - 1).LessThan(size));
+			Assert.That(state.State, Has.Exactly(size - 1).LessThan(size));
 
-			Assert.That(state, Has.Exactly(size - 1).GreaterThan(1));
-			Assert.That(state, Has.Exactly(size - 4).GreaterThan(4));
+			Assert.That(state.State, Has.Exactly(size - 1).GreaterThan(1));
+			Assert.That(state.State, Has.Exactly(size - 4).GreaterThan(4));
 
 
-         		Assert.AreEqual(NPuzzleUtils.AcceptableState(state), true);
+         		Assert.AreEqual(NPuzzleUtils.AcceptableState(state.State), true);
 	         	Console.WriteLine(state.ToString());
 
 		}

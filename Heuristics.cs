@@ -1,20 +1,27 @@
 using System;
 using Problem;
+using System.Collections.Generic;
 
 namespace Heuristics
 {
-	public delegate K HeuristicFunction<S,A,C,K>(SearchTreeNode.Node<S, A, C> node) where K:IComparable; 
+	public delegate C HeuristicFunction<S,A,C>(SearchTreeNode.Node<S, A, C> node) 
+		where C:IComparable
+		where S:IEquatable<S>; 
+
+	public delegate Key Heurfun<Key, Value>(Value v);
 
 	public class NPuzzleHeuristics {
+
+		// public static Func
 		/*!
 		 * Calculate the total city-block distance for the
 		 * state
 		 */
-		public static int ManhattanDistance(SearchTreeNode.Node<int[],int,int> node) 
+		public static int ManhattanDistance(SearchTreeNode.Node<NPuzzleState<int[]>,int,int> node) 
                 // public static int ManhattanDistance(SearchTreeNode.Node<S,A,C>
 		{
 			int md = 0;
-			int[] state = node.state;
+			int[] state = node.state.State;
 			int dim = (int) Math.Sqrt(state.Length);
 
 			for (int i = 0; i < state.Length; i++) {
@@ -31,7 +38,16 @@ namespace Heuristics
 				}
 			}
 
+			node.hv = md;
+
 			return md;
 		}
+
+
+		public static int AStarManhattanDistance(SearchTreeNode.Node<NPuzzleState<int[]>,int,int> node) 
+		{
+			return node.pathCost + ManhattanDistance(node);
+		}
 	}
+
 }

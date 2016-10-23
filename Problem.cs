@@ -2,6 +2,7 @@ namespace Problem
 {
         using System;
         using System.Collections.Generic;
+	using System.Collections;
 
 	/**
 	 * Class AbstractProblem. A 'Problem' is philosophically
@@ -92,18 +93,22 @@ namespace Problem
 		public override Cost PathCost(Cost cost, State state1, Action action, State state2)
 		{
 			return default(Cost);
-
 		}	
 	}
 
 	// close constructed type
-	public class NPuzzleProblem<State, Action, Cost>: AbstractProblem<int[], int, int>
+	public class NPuzzleProblem<State, Action, Cost>: AbstractProblem<NPuzzleState<int[]>, int, int>
 	{
 		private int dimension;
 		private int size;
-		new private int[] goalState, initialState;
+		// TODO: 
+		// new private Sate goalState, initialState
+		// why actually put NPuzzleState in here?
+		//private NPuzzleState<int[]> goalState, initialState;
 
-		public NPuzzleProblem(int[] goal, int[] initial)
+		// against, just use State instead of NPuzzleState<int[]>
+		//  State should have a State property
+		public NPuzzleProblem(NPuzzleState<int[]> goal, NPuzzleState<int[]> initial)
 		{
 			//! both goal and initial should be the same length
 			//! goal should be a valid goal state (positive integers 1 through size in order
@@ -114,18 +119,18 @@ namespace Problem
 			string error = "State empty"; 
 			bool errorFlag = false;
 
-			if (!EqualStateLengths(goal, initial)) {
+			if (!EqualStateLengths(goal.State, initial.State)) {
 				error = "Goal state length and initial state length differ";
 				errorFlag = true;
 			} else 
-                        if (!ValidStateLength(goal)) {
+                        if (!ValidStateLength(goal.State)) {
 				error = "The length of a state should be equal to the square of an integer.";
 				errorFlag = true;
 			} else
-			if (!ValidGoalState(goal)) {
+			if (!ValidGoalState(goal.State)) {
 				error = "Invalid goal state. It should be the positive integers from 1 to n, where n is the size of the puzzle";
 				errorFlag = true;
-			} else if (!ValidInitialState(initial)) {
+			} else if (!ValidInitialState(initial.State)) {
                            	error = "Invalid initial state. It should contain all positive integers from 1 to n, where n is the size of the puzzle, and contain an even number of inversions when not comparing elements to the largest element of size n";
 				errorFlag = true;
 
@@ -139,15 +144,12 @@ namespace Problem
 				throw ex;
 			}
 
-                      	double sqrt = Math.Sqrt(goal.Length);
+                      	double sqrt = Math.Sqrt(goal.State.Length);
+			size = goal.State.Length;
+			dimension = (int) sqrt;
 			GoalState = goal;
 			InitialState = initial;
-			size = goal.Length;
-			dimension = (int) sqrt;
-
 		}
-
-
 
 		private bool EqualStateLengths(int[] goal, int[] initial)
 		{
@@ -194,8 +196,10 @@ namespace Problem
 		 *
 		 * 
 		 */
-		public override List<int> Actions(int[] state) 
+		// TODO: use State instead of int[]
+		public override List<int> Actions(NPuzzleState<int[]> s) 
 		{
+			int[] state = s.State;
 			int emptyIndex = GetEmptyIndex(state);
                         if (emptyIndex == -1) 
 			{
@@ -226,6 +230,8 @@ namespace Problem
 		/*!
 		 * Determine whether or not an action is acceptable for the given state
 		 */
+		// TODO: use State instead of int[]
+		// Actually, this might not matter as much
 		public bool AcceptableAction(int[] state, int emptyIndex, int action) 
 		{
 			if (action != 1 && action != -1 && action != 2 && action != -2) return false;
@@ -260,6 +266,7 @@ namespace Problem
 		 * get the index of the 'empty' space in the puzzle
 		 * , which is equal to 'size'
 		 */
+		// TODO: why public?
 		public int GetEmptyIndex(int[] state)
 		{
 			for (int i = 0; i < state.Length; i++) {
@@ -269,8 +276,10 @@ namespace Problem
 			return -1;
 		}
 
-		public override int[] Result(int[] state, int action)
+		// TODO: again, NPuzzleState return type instead of int[]
+		public override NPuzzleState<int[]> Result(NPuzzleState<int[]> s, int action)
 		{
+			int[] state = s.State;
 			int[] newState = new int[state.Length];
 			int emptyIndex;
 			state.CopyTo(newState, 0);
@@ -298,25 +307,26 @@ namespace Problem
 
 			}
 
-			return newState;
-
-
+			return new NPuzzleState<int[]>(newState);
          	}
 
-		public override bool GoalTest(int[] state) 
+		public override bool GoalTest(NPuzzleState<int[]> state) 
 		{
-			if (GoalState.Length != state.Length) 
+			if (GoalState.Equals(state)) return true;
+			else return false;
+			/*
+			if (GoalState.State.Length != state.State.Length) 
 			{
 				return false;
 			}
-			for(int i = 0; i < state.Length; i++)
+			for(int i = 0; i < state.State.Length; i++)
 			{
-				if (GoalState[i] != state[i]) return false;
+				if (GoalState.State[i] != state.State[i]) return false;
 			}
-			return true;
+			return true;*/
 		}
 
-		public override int PathCost(int cost, int[] state1, int action, int[] state2)
+		public override int PathCost(int cost, NPuzzleState<int[]> state1, int action, NPuzzleState<int[]> state2)
 		{
 			return cost + 1;
 
@@ -338,7 +348,7 @@ namespace Problem
 	 * become possible
 	 *
 	 */
-	abstract public class AbstractState<S> : IEquatable<AbstractState<S> >
+	abstract public class AbstractState<S>
 	{
 		private S state;
 		public AbstractState(S s)
@@ -351,22 +361,94 @@ namespace Problem
 		public S State
 		{
 			get {return state;}
-			set {state = value;}
+		}
+	}
+
+	public class NPuzzleStateEnum: IEnumerator
+	{
+		private int[] state;
+		private int currentIndex;
+		private int current;
+
+		public NPuzzleStateEnum(int[] s)
+		{
+			state = s;
+			currentIndex = -1;
+			current = default(int);
+		}
+
+		public bool MoveNext()
+		{
+			if (++currentIndex >= state.Length)
+			{
+				return false;
+			} else
+			{
+				current = state[currentIndex];
+				return true;
+			}
+		}
+
+		public void Reset()
+		{
+			currentIndex = -1;
+			current = default(int);
+		}
+
+		object IEnumerator.Current
+		{
+			get
+			{
+				return Current;
+			}
+		}
+
+		public int Current
+		{
+			get 
+			{
+				try {
+				        return state[currentIndex];
+				} catch(IndexOutOfRangeException)
+				{
+					throw new InvalidOperationException();
+				}
+			}
+		}
+
+
+	}
+
+	public class NPuzzleState<S> : AbstractState<int[]>, IEquatable<NPuzzleState<int[]>>, IEnumerable  
+	{
+		private int current;
+		private int currentIndex;
+
+		public NPuzzleState(int[] state) : base(state)
+		{
+			currentIndex = -1;
+			current = default(int);
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return (IEnumerator) GetEnumerator();
+		}
+
+		public NPuzzleStateEnum GetEnumerator()
+		{
+			return new NPuzzleStateEnum(State);
+
 		}
 
 		public override bool Equals(object obj)
 		{
-			return this.Equals(obj as AbstractState<S>);
+			return this.Equals(obj as NPuzzleState<int[]>);
 		}
 
-		abstract public bool Equals(AbstractState<S> state);
-	}
-
-	public class NPuzzleState<S>: AbstractState<int[]> 
-	{
-
-		public override bool Equals(AbstractState<int[]> s) 
+		public bool Equals(NPuzzleState<int[]> s) 
 		{
+			//Console.WriteLine("in NPuzzleState<int[]> equals");
 			if (Object.ReferenceEquals(s.State, null))
 			{
 				return false;
@@ -377,7 +459,7 @@ namespace Problem
 				return true;
 			}
 
-			if (this.state.GetType() != s.State.GetType())
+			if (this.State.GetType() != s.State.GetType())
 				return false;
 
 
@@ -391,6 +473,34 @@ namespace Problem
 			}
 
 			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hash = 17;
+				for (int i = 0; i < this.State.Length; i++)
+				{
+					hash = hash * 23 + this.State[i].GetHashCode();
+				}
+
+				return hash;
+
+			}
+		}
+
+		public override string ToString() 
+		{
+			string str = "";
+			int l = State.Length;
+			for (int i = 0; i < l; i++)
+			{
+				if (i < l - 1) str += State[i] + " ";
+				else str += State[i];
+			}
+
+			return str;
 		}
 	}
 }

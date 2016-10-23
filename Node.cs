@@ -13,9 +13,11 @@ namespace SearchTreeNode
 	 *
 	 * @class Node<State, Action, Cost>
 	 *   - State : this type defines the state for the problem.
+	 *   - Action : this type defines transitions between states
+	 *   - Cost  : Cost represents the cost of moving from one state to another. It should also represent the type of heuristic value calculated for a given node
 	 */
 	public class Node<State, Action, Cost> : IEquatable<Node<State, Action, Cost> >
-		where State:IEquatable
+		where State:IEquatable<State>
 	{
 		public State state;
 		public Node<State, Action, Cost> parent;
@@ -23,15 +25,20 @@ namespace SearchTreeNode
 		public Cost pathCost;
 		public int depth;
 
-		public Node(State state, Node<State, Action, Cost> parent=null,  Action action=default(Action), Cost path_cost=default(Cost)) 
+		//! Add a heuristic value
+		public Cost hv;
+
+		public Node(State state, Node<State, Action, Cost> parent=null,  Action action=default(Action), Cost path_cost=default(Cost))  
 		{
 			this.state = state;
 			this.parent = parent;
 			this.action = action;
 			this.pathCost = path_cost;
+			this.hv = default(Cost);
 
 			if (parent != null) this.depth = parent.depth + 1;
 			else this.depth = 0;
+
 		}
 
 		protected Node() {}
@@ -107,7 +114,7 @@ namespace SearchTreeNode
 		public bool Equals(Node<State,Action,Cost> node)
 		{
 
-			Console.WriteLine("in NOde Equals");
+			//Console.WriteLine("in NOde Equals");
 			if (Object.ReferenceEquals(node, null))
 			{
 				return false;

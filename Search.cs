@@ -21,109 +21,21 @@ namespace Search
 
 		}
 	}
-	/*
-        public class BestFirstGraphSearch 
+
+	public class BestFirstGraphSearch<E, A, C> 
+		where C:IComparable 
+		where E:IEquatable<E>
 	{
-		private Frontier<int, Node<int[],int,int> > frontier;
-		// private SortedList<C, List<SearchTreeNode.Node<E, A, C> > > frontier;
-		private NPuzzleProblem<int[], int, int> problem;
-		private Heuristics.HeuristicFunction<int[],int,int,int> heurfun;
-
-		public BestFirstGraphSearch(NPuzzleProblem<int[], int, int> problem, Heuristics.HeuristicFunction<int[],int,int,int> hf) 
-		{
-			frontier = new Frontier<int, Node<int[],int,int> >();
-			this.problem = problem;
-			heurfun = hf;
-
-		}
-
-		protected BestFirstGraphSearch() {}
-
-		public Node<int[], int, int> Search()
-		{
-			HashSet<int[]> explored = new HashSet<int[]>();
-
-			//! first node in the frontier is the initialState
-			Node<int[], int, int> node = new Node<int[], int, int>(problem.InitialState);
-
-		        
-			//! if it happens to be the goal state, return it, we're done
-			if (problem.GoalTest(node.state)) return node;
-			int heur = heurfun(node);
-			frontier.Append(heur, node);
-
-			if(node.GetType() != typeof(Node<int[],int,int>))
-			{
-				Exception ex = new Exception("You fucked up");
-				throw ex;
-			}	
-					
-
-
-
-		        while (frontier.Count() > 0)
-			{
-				node = frontier.Pop();
-				if (explored.Count >10000) break;
-				if (node == null)
-				{
-					NPuzzleUtils.NullSearchNodeException ex = new NPuzzleUtils.NullSearchNodeException("Popped null node off frontier");
-					throw ex;
-
-				}
-				if (problem.GoalTest(node.state)) return node;
-
-				explored.Add(node.state);
-
-				//node = this.frontier.RemoveAt(0);
-				node.Expand(problem).ForEach(
-						delegate(Node<int[], int, int> n)
-						{
-						    heur = heurfun(n);
-						    if (!explored.Contains(n.state) && !frontier.In(heur, n))
-						    {
-						       frontier.Append(heur, n);
-
-						    } //else if (frontier.In(heur, n)) 
-						    //{
-						      //bool r = frontier.ReplaceIncumbent(
-
-						    // }
-						}
-						);
-			}
-
-			//return default(Node<int[],int,int>);
-			return node;
-		}
-	}
-	*/
-	public class BestFirstGraphSearch<E, A, C, K > 
-		where K:IComparable 
-	{
-		private Frontier<K, Node<E,A,C> > frontier;
+		private PriorityQueue<C, Node<E,A,C> > frontier;
 		private AbstractProblem<E, A, C> problem;
-		private Heuristics.HeuristicFunction<E,A,C,K> heurfun;
-		private Node<E,A,C> node;
+		// private Heuristics.Heurfun<C, Node<E, A, C>> heurfun;
+		//private Heuristics.HeuristicFunction<E,A,C> heurfun;
 
-		public BestFirstGraphSearch(AbstractProblem<E, A, C> p, Heuristics.HeuristicFunction<E,A,C,K> hf, Node<E,A,C> node) 
+		public BestFirstGraphSearch(AbstractProblem<E, A, C> p, Heuristics.Heurfun<C, Node<E,A,C>> hf /*, PriorityQueue<C, Node<E,A,C>> f*/) 
 		{
-			frontier = new Frontier<K, Node<E,A,C> >();
+			frontier = new PriorityQueue<C, Node<E,A,C> >(hf); // f
 			problem = p;
-			this.node = node;
-
-			if (problem.GetType() != typeof(NPuzzleProblem<int[],int,int>))
-			{
-                        	NPuzzleUtils.InvalidProblemException ex = new NPuzzleUtils.InvalidProblemException("We don't have an npuzzle");
-				throw ex;
-			}
-			if (problem.GetType() == typeof(AbstractProblem<E,A,C>))
-			{
-                        	NPuzzleUtils.InvalidProblemException ex = new NPuzzleUtils.InvalidProblemException("We don't have an npuzzle");
-				throw ex;
-			}
-
-			heurfun = hf;
+		        //heurfun = hf;
 		}
 
 		protected BestFirstGraphSearch() {}
@@ -131,15 +43,14 @@ namespace Search
 		public Node<E, A, C> Search()
 		{
 			HashSet<E> explored = new HashSet<E>();
-
 			//! first node in the frontier is the InitialState
-
-			//Node<E, A, C> node = new Node<E, A, C>(problem.InitialState);
-
+			Node<E, A, C> node = new Node<E, A, C>(problem.InitialState);
+			Console.Write("Initial node: ");
+			Console.WriteLine(node.state.ToString());
 			//! if it happens to be the goal state, return it, we're done
 			if (problem.GoalTest(node.state)) return node;
-			K heur = heurfun(node);
-			frontier.Append(heur, node);
+			//C heur = heurfun(node);
+			frontier.Append(/*heur,*/node);
 
 		        while (frontier.Count() > 0 /*&& frontier.Count() < 100*/)
 			{
@@ -150,35 +61,35 @@ namespace Search
 					NPuzzleUtils.NullSearchNodeException ex = new NPuzzleUtils.NullSearchNodeException("Node popper off frontier is null");
 					throw ex;
 				}
-				 int[] s = {1,2,3,4,5,6,7,8,9};
-				
+				int[] s = {1,2,3,4,5,6,7,8,9};
 
 				if (problem.GoalTest(node.state)) return node;
 				explored.Add(node.state);
-				var enumerable = node.state as IEnumerable;
-				/*if (enumerable != null)
-					foreach(var item in enumerable)
-						Console.Write("{0} ", item);
-				Console.WriteLine();*/
-				if (node.GetType() != typeof(NPuzzleNode<int[],int,int>))
-				{
-					Console.WriteLine("is a NPuzzleNode");
-
-				}
-
+				//Console.WriteLine("Popped from frontier: {0}", node.state.ToString());
 
 				node.Expand(problem).ForEach(
 						delegate(Node<E, A, C> n)
 						{
-						    heur = heurfun(n);
-						    if (!explored.Contains(n.state) && !frontier.In(heur, n))
+						    // heur = heurfun(n);
+						    bool inPriorityQueue = frontier.InPriorityQueue(n);
+						    if (!explored.Contains(n.state) && !inPriorityQueue)
 						    {
-						    Console.WriteLine("Appending to frontier");
-						       frontier.Append(heur, n);
-						    } else 
+						    //Console.WriteLine("Appending to frontier: {0}", n.state.ToString());
+						       frontier.Append(/*heur,*/ n);
+						    } else if (inPriorityQueue) 
 						    {
+						       Node<E, A, C> incumbent = frontier.GetIncumbent(n);
+						       if (frontier.Heurfun(n).CompareTo(frontier.Heurfun(incumbent)) == 1)
+						       {
+						       // remove incumbent
+						       frontier.RemoveIncumbent(incumbent);
+						       // add n
+						       frontier.Append(n);
 
-						    Console.WriteLine("Nothing to append to frontier");
+
+						       }
+
+				//		    Console.WriteLine("It's in the frontier");
 
 						    }
 
@@ -192,14 +103,46 @@ namespace Search
 
 	}
 
-	/*
-	public class AStarGraphSearch<E, A, C,K, P> : BestFirstGraphSearch<E, A, C,K, P>  where K:IComparable
+	public class AStarGraphSearch<E, A, C> : BestFirstGraphSearch<E, A, C>  
+		where C:IComparable
+		where E:IEquatable<E>
 	{
-		public AStarGraphSearch() 
+		// private Heuristics.Heurfun<C, Node<E,A,C>> hf;
+		// private PriorityQueue<C, Node<E,A,C>> frontier;
+		//
+		//! TODO: Is there a better way to include the use
+		//! of a heuristic function for AStar graph searches?
+		//! Generally, it seems like it would be preferable
+		//! to pass in a heuristic function, and add the
+		//! result of the heuristic function to the 
+		//! pathCost of reaching the node from the root
+		//! node, like:
+		//
+		//! delegate (Node<E,A,C> node) 
+		//! {
+		//! 	return node.pathCost + hf(node);
+		//! }
+		//
+		//! Problem is, the compiler throws an error because
+		//! both values are of type C, and there is no way
+		//! to add such values at this point in time. Generally
+		//! C should represent a numerical value of some kind
+		//! , and hence the addition operator should work.
+		//! But the compiler doesn't know this. So what type
+		//! restriction can we impose on C? 
+		//
+		//! For now, simply
+
+		/*!
+		 * 
+		 *
+		 * @param {Heuristics.Heurfun<Cost, Node<State, Action, Cost>>} hf - a heuristic function which 
+		 */
+		public AStarGraphSearch(AbstractProblem<E, A, C> p, Heuristics.Heurfun<C, Node<E,A,C>> hf) : base(p, hf)
 		{
 
 		}
-	}*/
+	}
 }
 
 

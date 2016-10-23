@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Problem;
 
 class NPuzzleUtils
 {
@@ -15,7 +16,7 @@ class NPuzzleUtils
 	 * Generate a random acceptable initial state
 	 *
 	 */
-	public static int[] GenerateInitState(int size)
+	public static Problem.NPuzzleState<int[]> GenerateInitState(int size)
 	{
 		int[] state = new int[size];
 		for (int i = 0; i < size; i++) state[i] = i + 1;
@@ -28,13 +29,13 @@ class NPuzzleUtils
 		}
 
 
-		return state;
+		return new Problem.NPuzzleState<int[]>(state);
 	}
 
 	/*!
 	 * Create a random instance of a problem
 	 */
-	public static Problem.NPuzzleProblem<int[], int, int> CreateProblem(int size)
+	public static Problem.NPuzzleProblem<Problem.NPuzzleState<int[]>, int, int> CreateProblem(int size)
 	{
 		if (!AcceptableLength(size))
 		{
@@ -43,12 +44,15 @@ class NPuzzleUtils
 			throw ex;
 		}
 
-		int[] goalState = new int[size], initial;
+		int[] goalState = new int[size];
+		NPuzzleState<int[]> initial;
 		for (int i = 0; i < size; i++) 
 			goalState[i] = i + 1;
 
+		NPuzzleState<int[]> goal = new NPuzzleState<int[]>(goalState);
 		initial = GenerateInitState(size);
-		Problem.NPuzzleProblem<int[], int, int> problem = new Problem.NPuzzleProblem<int[], int, int>(goalState, initial);
+
+		Problem.NPuzzleProblem<NPuzzleState<int[]>, int, int> problem = new Problem.NPuzzleProblem<NPuzzleState<int[]>, int, int>(goal, initial);
 		return problem;
 	}
 
